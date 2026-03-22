@@ -268,7 +268,6 @@
   </div>
 
   <script>
-    // ヘルパー関数: 配列のシャッフル（これが不足していたことが原因でした）
     function shuffleArray(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -280,7 +279,14 @@
 
     let audioCtx = null;
     const Sound = {
-      init() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); },
+      init() { 
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume(); 
+        }
+      },
       play(freq, type, duration, vol) { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime); gain.gain.setValueAtTime(vol, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration); },
       playTap() { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.05); },
       playPlace() { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.4, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1); },
@@ -315,27 +321,104 @@
     const controlPanel = document.getElementById('control-panel');
     const boardOverlay = document.getElementById('board-overlay');
 
-    document.getElementById('btn-import-csv').onclick = () => { if (isGameStarted) return; document.getElementById('file-upload').click(); };
-    document.getElementById('file-upload').onchange = (e) => {
-      const file = e.target.files[0]; if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target.result; const lines = text.split(/\r?\n/); let newCustomWords = [];
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].trim(); if (!line) continue;
-          const parts = line.split(',').map(s => s.trim());
-          if (parts.length >= 3 && parts[0] && parts[1]) { if (parts[0] === 'ひらがな' || parts[0] === 'テキスト') continue; newCustomWords.push({ text: parts[0], kanji: parts[1], hint: parts[2] }); }
-        }
-        if (newCustomWords.length < 60) { alert(`データが不足しています（現在 ${newCustomWords.length}個）。最低60個必要です。`); return; }
-        customWords = newCustomWords; document.getElementById('opt-custom').disabled = false;
-        document.getElementById('select-grade').value = 'custom'; currentGrade = 'custom'; alert(`成功！ ${newCustomWords.length}個を読み込みました。`); resetBoardData(true);
-      };
-      reader.readAsText(file); e.target.value = '';
+    document.getElementById('btn-import-csv').onclick = () => { 
+        if (isGameStarted) return; 
+        Sound.init();
+        document.getElementById('file-upload').click(); 
     };
 
-    function setUILock(locked) { isAnimating = locked; if (locked) { controlPanel.classList.add('ui-locked'); boardOverlay.classList.remove('hidden'); } else { controlPanel.classList.remove('ui-locked'); boardOverlay.classList.add('hidden'); } }
-    function setSettingsLock(locked) { const selLen = document.getElementById('select-length'), selGrd = document.getElementById('select-grade'), btnImport = document.getElementById('btn-import-csv'), panel = document.getElementById('settings-panel'), lockIcon = document.getElementById('lock-icon'); selLen.disabled = locked; selGrd.disabled = locked; btnImport.disabled = locked; if (locked) { panel.classList.add('opacity-80', 'grayscale-[0.4]'); lockIcon.classList.remove('opacity-0'); } else { panel.classList.remove('opacity-80', 'grayscale-[0.4]'); lockIcon.classList.add('opacity-0'); } }
-    function updateUndoButton() { const btnUndo = document.getElementById('btn-undo'); if (historyStack.length > 0 && isGameStarted) { btnUndo.disabled = false; btnUndo.classList.remove('opacity-50', 'cursor-not-allowed'); } else { btnUndo.disabled = true; btnUndo.classList.add('opacity-50', 'cursor-not-allowed'); } }
+    // CSV読み込み処理の堅牢化（エンコーディング判定付き）
+    document.getElementById('file-upload').onchange = (e) => {
+      const file = e.target.files[0]; 
+      if (!file) return;
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        const buffer = event.target.result;
+        let text = "";
+        
+        // 1. まずUTF-8としてデコードを試みる（エラーをスローさせる設定）
+        try {
+            const decoder = new TextDecoder('utf-8', { fatal: true });
+            text = decoder.decode(buffer);
+        } catch (err) {
+            // 2. UTF-8でエラーが出た場合（Excel等で作成）、Shift-JISでデコードする
+            console.warn("UTF-8 decode failed, falling back to Shift_JIS.");
+            const decoder = new TextDecoder('shift_jis');
+            text = decoder.decode(buffer);
+        }
+
+        const lines = text.split(/\r?\n/); 
+        let newCustomWords = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim(); 
+          if (!line) continue;
+          
+          // 簡易的なCSVパース（ダブルクォートなどは考慮しない最低限のパース）
+          const parts = line.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+          
+          if (parts.length >= 2 && parts[0] && parts[1]) { 
+            if (parts[0] === 'ひらがな' || parts[0] === 'テキスト') continue; // ヘッダー除外
+            newCustomWords.push({ 
+                text: parts[0], 
+                kanji: parts[1], 
+                hint: parts[2] || "" 
+            }); 
+          }
+        }
+        
+        if (newCustomWords.length < 60) { 
+            alert(`データが不足しています（現在 ${newCustomWords.length}個）。最低60個必要です。`); 
+            return; 
+        }
+        
+        customWords = newCustomWords; 
+        document.getElementById('opt-custom').disabled = false;
+        document.getElementById('select-grade').value = 'custom'; 
+        currentGrade = 'custom'; 
+        alert(`成功！ ${newCustomWords.length}個の問題を読み込みました。`); 
+        resetBoardData(true);
+      };
+      
+      // 文字コード自動判定のため ArrayBuffer として読み込む
+      reader.readAsArrayBuffer(file); 
+      e.target.value = '';
+    };
+
+    function setUILock(locked) { 
+        isAnimating = locked; 
+        if (locked) { 
+            controlPanel.classList.add('ui-locked'); 
+            boardOverlay.classList.remove('hidden'); 
+        } else { 
+            controlPanel.classList.remove('ui-locked'); 
+            boardOverlay.classList.add('hidden'); 
+        } 
+    }
+    
+    function setSettingsLock(locked) { 
+        const selLen = document.getElementById('select-length'), selGrd = document.getElementById('select-grade'), btnImport = document.getElementById('btn-import-csv'), panel = document.getElementById('settings-panel'), lockIcon = document.getElementById('lock-icon'); 
+        selLen.disabled = locked; selGrd.disabled = locked; btnImport.disabled = locked; 
+        if (locked) { 
+            panel.classList.add('opacity-80', 'grayscale-[0.4]'); 
+            lockIcon.classList.remove('opacity-0'); 
+        } else { 
+            panel.classList.remove('opacity-80', 'grayscale-[0.4]'); 
+            lockIcon.classList.add('opacity-0'); 
+        } 
+    }
+    
+    function updateUndoButton() { 
+        const btnUndo = document.getElementById('btn-undo'); 
+        if (historyStack.length > 0 && isGameStarted) { 
+            btnUndo.disabled = false; 
+            btnUndo.classList.remove('opacity-50', 'cursor-not-allowed'); 
+        } else { 
+            btnUndo.disabled = true; 
+            btnUndo.classList.add('opacity-50', 'cursor-not-allowed'); 
+        } 
+    }
 
     function saveState() {
       historyStack.push({ board: JSON.parse(JSON.stringify(board)), currentPlayer: currentPlayer, passedHistory: Array.from(passedHistory) });
@@ -343,14 +426,20 @@
     }
 
     function updateUI() {
-      let s1 = 0, s2 = 0; board.forEach(row => row.forEach(v => { if(v===1)s1++; if(v===2)s2++; }));
+      let s1 = 0, s2 = 0; 
+      board.forEach(row => row.forEach(v => { if(v===1)s1++; if(v===2)s2++; }));
       score1El.innerText = s1; score2El.innerText = s2;
       document.body.classList.remove('bg-slate-200', 'bg-sky-100', 'bg-pink-100');
+      
       if (currentPlayer === 1) {
-        document.body.classList.add('bg-sky-100'); turnInd.innerText = "水色のターン！"; turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-sky-300 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
+        document.body.classList.add('bg-sky-100'); 
+        turnInd.innerText = "水色のターン！"; 
+        turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-sky-300 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
         p1Box.classList.add('active-player-card'); p2Box.classList.remove('active-player-card');
       } else {
-        document.body.classList.add('bg-pink-100'); turnInd.innerText = "ピンクのターン！"; turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-pink-400 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
+        document.body.classList.add('bg-pink-100'); 
+        turnInd.innerText = "ピンクのターン！"; 
+        turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-pink-400 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
         p2Box.classList.add('active-player-card'); p1Box.classList.remove('active-player-card');
       }
     }
@@ -361,26 +450,76 @@
           const val = board[r][c], inner = document.getElementById(`cell-inner-${r}-${c}`), sC = document.getElementById(`s-cont-${r}-${c}`), front = document.getElementById(`face-front-${r}-${c}`), mWrap = document.getElementById(`marker-wrap-${r}-${c}`), dot = document.getElementById(`dot-${r}-${c}`);
           const isShowingThis = showingKanji && showingKanji.r === r && showingKanji.c === c;
           const canMove = showHints && !isGameOver && getFlippable(r, c, currentPlayer).length > 0;
-          if (isShowingThis) { inner.classList.add('is-flipped'); inner.classList.add('showing-highlight'); } else { inner.classList.remove('is-flipped'); inner.classList.remove('showing-highlight'); }
+          
+          if (isShowingThis) { 
+              inner.classList.add('is-flipped'); inner.classList.add('showing-highlight'); 
+          } else { 
+              inner.classList.remove('is-flipped'); inner.classList.remove('showing-highlight'); 
+          }
+          
           front.classList.remove('can-move-p1', 'can-move-p2');
-          if (val === 0 && canMove && !showingKanji) { if (currentPlayer === 1) front.classList.add('can-move-p1'); else front.classList.add('can-move-p2'); mWrap.classList.remove('hidden'); dot.style.backgroundColor = currentPlayer === 1 ? '#38bdf8' : '#f472b6'; } else { mWrap.classList.add('hidden'); }
-          if (val !== 0) { sC.classList.remove('hidden'); const stone = document.getElementById(`stone-${r}-${c}`); if(val === 1) stone.classList.remove('flipped'); else stone.classList.add('flipped'); } else { sC.classList.add('hidden'); }
+          if (val === 0 && canMove && !showingKanji) { 
+              if (currentPlayer === 1) front.classList.add('can-move-p1'); else front.classList.add('can-move-p2'); 
+              mWrap.classList.remove('hidden'); dot.style.backgroundColor = currentPlayer === 1 ? '#38bdf8' : '#f472b6'; 
+          } else { 
+              mWrap.classList.add('hidden'); 
+          }
+          
+          if (val !== 0) { 
+              sC.classList.remove('hidden'); 
+              const stone = document.getElementById(`stone-${r}-${c}`); 
+              if(val === 1) stone.classList.remove('flipped'); else stone.classList.add('flipped'); 
+          } else { 
+              sC.classList.add('hidden'); 
+          }
         }
       }
     }
 
-    function getFlippable(r, c, p) { if (board[r][c] !== 0) return []; let flips = []; const opp = p === 1 ? 2 : 1; for (let [dr, dc] of DIRECTIONS) { let nr = r + dr, nc = c + dc, path = []; while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === opp) { path.push({r: nr, c: nc}); nr += dr; nc += dc; } if (path.length > 0 && nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === p) flips = flips.concat(path); } return flips; }
-    function hasValidMoves(p) { for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (getFlippable(r, c, p).length > 0) return true; return false; }
+    function getFlippable(r, c, p) { 
+        if (board[r][c] !== 0) return []; 
+        let flips = []; 
+        const opp = p === 1 ? 2 : 1; 
+        for (let [dr, dc] of DIRECTIONS) { 
+            let nr = r + dr, nc = c + dc, path = []; 
+            while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === opp) { 
+                path.push({r: nr, c: nc}); nr += dr; nc += dc; 
+            } 
+            if (path.length > 0 && nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === p) flips = flips.concat(path); 
+        } 
+        return flips; 
+    }
+    
+    function hasValidMoves(p) { 
+        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (getFlippable(r, c, p).length > 0) return true; 
+        return false; 
+    }
 
     function generateWords() {
-      let list = []; if (currentGrade === 'custom') list = customWords; else { const db = (currentGrade === "upTo3" ? DB_UPTO3 : DB_ONLY4); list = (currentLength === "1" ? db.len1 : db.len2); }
-      const hardCount = Math.min(20, Math.floor(list.length / 4)); const normalList = list.slice(0, list.length - hardCount); const hardList = list.slice(list.length - hardCount);
+      let list = []; 
+      if (currentGrade === 'custom') list = customWords; 
+      else { 
+          const db = (currentGrade === "upTo3" ? DB_UPTO3 : DB_ONLY4); 
+          list = (currentLength === "1" ? db.len1 : db.len2); 
+      }
+      const hardCount = Math.min(20, Math.floor(list.length / 4)); 
+      const normalList = list.slice(0, list.length - hardCount); 
+      const hardList = list.slice(list.length - hardCount);
       let normalPool = shuffleArray([...normalList]); let hardPool = shuffleArray([...hardList]);
+      
       while (hardPool.length < 4) hardPool = hardPool.concat(shuffleArray([...hardList]));
       while (normalPool.length < 56) normalPool = normalPool.concat(shuffleArray([...normalList]));
+      
       let selectedHard = hardPool.slice(0, 4); let selectedNormal = normalPool.slice(0, 56);
-      let words = Array(64).fill(null); const corners = [0, 7, 56, 63]; const centers = [27, 28, 35, 36]; let normalIdx = 0, hardIdx = 0;
-      for (let i = 0; i < 64; i++) { if (centers.includes(i)) words[i] = { text: "", kanji: "", hint: "" }; else if (corners.includes(i)) words[i] = selectedHard[hardIdx++]; else words[i] = selectedNormal[normalIdx++]; }
+      let words = Array(64).fill(null); 
+      const corners = [0, 7, 56, 63]; const centers = [27, 28, 35, 36]; 
+      let normalIdx = 0, hardIdx = 0;
+      
+      for (let i = 0; i < 64; i++) { 
+          if (centers.includes(i)) words[i] = { text: "", kanji: "", hint: "" }; 
+          else if (corners.includes(i)) words[i] = selectedHard[hardIdx++]; 
+          else words[i] = selectedNormal[normalIdx++]; 
+      }
       return words;
     }
 
@@ -391,10 +530,13 @@
           const idx = r * 8 + c, word = currentWords[idx], cell = document.createElement('div');
           cell.className = 'relative w-full h-full cell-flip-container cursor-pointer';
           cell.onclick = () => { Sound.init(); handleCell(r, c); };
+          
           const inner = document.createElement('div'); inner.id = `cell-inner-${r}-${c}`;
           inner.className = 'cell-flip-inner absolute inset-0 w-full h-full border border-emerald-950 rounded-sm shadow-inner bg-emerald-700';
+          
           const f = document.createElement('div'); f.id = `face-front-${r}-${c}`; f.className = 'cell-flip-face font-kyokasho absolute inset-0 bg-emerald-700 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
           const b = document.createElement('div'); b.className = 'cell-flip-face font-kyokasho cell-flip-back absolute inset-0 bg-emerald-600 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
+          
           if (word && word.text) {
             const t = document.createElement('div'); const charLen = word.text.length;
             t.style.fontSize = (charLen === 1) ? '48cqw' : (charLen === 2) ? '34cqw' : (charLen === 3) ? '26cqw' : '20cqw';
@@ -403,54 +545,99 @@
             const k = document.createElement('div'); k.style.fontSize = (word.kanji.length === 1) ? '50cqw' : '30cqw';
             k.className = 'text-white font-black text-center drop-shadow-lg w-full'; k.innerText = word.kanji; b.appendChild(k);
           }
+          
           const sC = document.createElement('div'); sC.id = `s-cont-${r}-${c}`; sC.className = 'absolute inset-1 hidden z-30 pointer-events-none';
           const s = document.createElement('div'); s.id = `stone-${r}-${c}`; s.className = 'stone w-full h-full rounded-full shadow-lg relative';
           const sf1 = document.createElement('div'); sf1.className = 'stone-face absolute inset-0 rounded-full bg-sky-300 border-2 border-sky-400 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
           const sf2 = document.createElement('div'); sf2.className = 'stone-face stone-back absolute inset-0 rounded-full bg-pink-400 border-2 border-pink-500 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
+          
           s.appendChild(sf1); s.appendChild(sf2); sC.appendChild(s);
           const mWrap = document.createElement('div'); mWrap.id = `marker-wrap-${r}-${c}`; mWrap.className = 'absolute top-0.5 right-0.5 w-[15%] aspect-square hidden z-20 pointer-events-none rounded-full';
           const dot = document.createElement('div'); dot.className = 'place-marker'; dot.id = `dot-${r}-${c}`; mWrap.appendChild(dot);
+          
           inner.appendChild(f); inner.appendChild(b); cell.appendChild(inner); cell.appendChild(sC); cell.appendChild(mWrap); boardEl.appendChild(cell);
         }
       }
     }
 
     async function handleCell(r, c) {
-      if (isGameOver || isAnimating) return; const flips = getFlippable(r, c, currentPlayer);
-      if (flips.length === 0 && (!showingKanji || showingKanji.r !== r || showingKanji.c !== c)) { Sound.playError(); return; }
+      if (isGameOver || isAnimating) return; 
+      const flips = getFlippable(r, c, currentPlayer);
+      if (flips.length === 0 && (!showingKanji || showingKanji.r !== r || showingKanji.c !== c)) { 
+          Sound.playError(); return; 
+      }
+      
       if (showingKanji && showingKanji.r === r && showingKanji.c === c) {
         setUILock(true); saveState(); board[r][c] = currentPlayer; showingKanji = null; updateBoard(false); Sound.playPlace();
         if (!isGameStarted) { isGameStarted = true; setSettingsLock(true); }
         await new Promise(res => setTimeout(res, 800));
-        for (let pos of flips) { board[pos.r][pos.c] = currentPlayer; updateBoard(false); Sound.playFlip(); await new Promise(res => setTimeout(res, 500)); }
+        
+        for (let pos of flips) { 
+            board[pos.r][pos.c] = currentPlayer; updateBoard(false); Sound.playFlip(); 
+            await new Promise(res => setTimeout(res, 500)); 
+        }
         await new Promise(res => setTimeout(res, 800));
+        
         const nextPlayer = currentPlayer === 1 ? 2 : 1;
-        if (hasValidMoves(nextPlayer)) currentPlayer = nextPlayer; else if (hasValidMoves(currentPlayer)) await showPassModal(); else { checkGameOver(true); setUILock(false); return; }
+        if (hasValidMoves(nextPlayer)) {
+            currentPlayer = nextPlayer; 
+        } else if (hasValidMoves(currentPlayer)) {
+            await showPassModal(); 
+        } else { 
+            checkGameOver(true); setUILock(false); return; 
+        }
         setUILock(false); updateUI(); updateBoard(true); checkGameOver(false);
-      } else { showingKanji = { r, c }; Sound.playTap(); updateBoard(true); }
+      } else { 
+          showingKanji = { r, c }; Sound.playTap(); updateBoard(true); 
+      }
     }
 
-    async function showPassModal() { Sound.playPass(); const modal = document.getElementById('modal-pass'), content = document.getElementById('pass-content'); modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); await new Promise(res => setTimeout(res, 1500)); modal.classList.add('opacity-0'); content.classList.add('scale-90'); await new Promise(res => setTimeout(res, 300)); modal.classList.add('hidden'); }
+    async function showPassModal() { 
+        Sound.playPass(); const modal = document.getElementById('modal-pass'), content = document.getElementById('pass-content'); modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); await new Promise(res => setTimeout(res, 1500)); modal.classList.add('opacity-0'); content.classList.add('scale-90'); await new Promise(res => setTimeout(res, 300)); modal.classList.add('hidden'); 
+    }
 
     function checkGameOver(force = false) {
       let s1=0, s2=0; board.forEach(row => row.forEach(v => { if(v===1)s1++; if(v===2)s2++; }));
       if (force || s1+s2===64 || (!hasValidMoves(1) && !hasValidMoves(2))) {
         isGameOver = true; Sound.playWin();
-        const wt = document.getElementById('winner-text'); wt.innerText = s1 > s2 ? "水色の勝ち！🎉" : (s2 > s1 ? "ピンクの勝ち！🎉" : "ひきわけ！🤝");
+        const wt = document.getElementById('winner-text'); 
+        wt.innerText = s1 > s2 ? "水色の勝ち！🎉" : (s2 > s1 ? "ピンクの勝ち！🎉" : "ひきわけ！🤝");
         wt.className = `text-2xl font-bold p-4 rounded-2xl border-4 flex-shrink-0 ${s1>s2?'bg-sky-50 border-sky-400 text-sky-800':'bg-pink-50 border-pink-400 text-pink-800'}`;
+        
         const p1List = document.getElementById('p1-list'), p2List = document.getElementById('p2-list'), passList = document.getElementById('pass-list');
         let p1Words = [], p2Words = [], unobtainedWords = [];
-        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) { const val = board[r][c], word = currentWords[r * 8 + c]; if (!word || !word.text) continue; if (val === 1) p1Words.push(word); else if (val === 2) p2Words.push(word); else unobtainedWords.push(word); }
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) { 
+                const val = board[r][c], word = currentWords[r * 8 + c]; 
+                if (!word || !word.text) continue; 
+                if (val === 1) p1Words.push(word); 
+                else if (val === 2) p2Words.push(word); 
+                else unobtainedWords.push(word); 
+            }
+        }
         let reviewSet = new Set([...unobtainedWords, ...passedHistory]);
+        
         const createHTML = (w) => `<div class="px-2 py-1.5 border-b border-gray-200/50 flex justify-between items-end gap-2 bg-white/50 rounded hover:bg-white transition-colors"><span class="text-xl font-bold">${w.kanji}</span><span class="text-xs text-gray-500 font-medium pb-0.5">${w.text}</span></div>`;
         p1List.innerHTML = p1Words.map(createHTML).join(''); p2List.innerHTML = p2Words.map(createHTML).join(''); passList.innerHTML = Array.from(reviewSet).map(createHTML).join('');
+        
         if (reviewSet.size === 0) passList.innerHTML = `<div class="p-4 text-center text-sm text-gray-400">パスされた漢字はありません。<br>すばらしい！</div>`;
         document.getElementById('modal-clear').classList.remove('hidden'); setTimeout(() => document.getElementById('clear-content').classList.add('scale-100'), 50);
       }
     }
 
-    function showConfirmModal(action) { if (isAnimating) return; Sound.playError(); pendingAction = action; const modal = document.getElementById('modal-confirm'), content = document.getElementById('confirm-content'), msg = document.getElementById('confirm-message'); msg.innerHTML = action === 'reset' ? "いままでの 記録が きえます。<br>ほんとうに 最初から やり直しますか？" : "いままでの 記録が きえます。<br>ほんとうに 問題を 変えますか？"; modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); }
-    function closeConfirmModal() { const modal = document.getElementById('modal-confirm'), content = document.getElementById('confirm-content'); modal.classList.add('opacity-0'); content.classList.add('scale-90'); setTimeout(() => { modal.classList.add('hidden'); pendingAction = null; }, 300); }
+    function showConfirmModal(action) { 
+        if (isAnimating) return; Sound.playError(); pendingAction = action; 
+        const modal = document.getElementById('modal-confirm'), content = document.getElementById('confirm-content'), msg = document.getElementById('confirm-message'); 
+        msg.innerHTML = action === 'reset' ? "いままでの 記録が きえます。<br>ほんとうに 最初から やり直しますか？" : "いままでの 記録が きえます。<br>ほんとうに 問題を 変えますか？"; 
+        modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); 
+    }
+    
+    function closeConfirmModal() { 
+        const modal = document.getElementById('modal-confirm'), content = document.getElementById('confirm-content'); 
+        modal.classList.add('opacity-0'); content.classList.add('scale-90'); 
+        setTimeout(() => { modal.classList.add('hidden'); pendingAction = null; }, 300); 
+    }
+    
     document.getElementById('btn-confirm-no').onclick = () => { Sound.playTap(); closeConfirmModal(); };
     document.getElementById('btn-confirm-yes').onclick = () => { Sound.playPass(); closeConfirmModal(); if (pendingAction === 'reset') resetBoardData(false); else if (pendingAction === 'shuffle') resetBoardData(true); };
     document.getElementById('btn-csv-help').onclick = () => { if (isAnimating) return; Sound.playTap(); const modal = document.getElementById('modal-csv-help'), content = document.getElementById('csv-help-content'); modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); };
@@ -459,7 +646,16 @@
     document.getElementById('btn-close-help').onclick = () => { Sound.playTap(); const modal = document.getElementById('modal-help'); modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); };
     document.getElementById('btn-close-clear').onclick = () => { Sound.playTap(); document.getElementById('modal-clear').classList.add('hidden'); };
 
-    function resetBoardData(gen = true) { if (isAnimating) return; if (gen) currentWords = generateWords(); board = Array(8).fill(0).map(() => Array(8).fill(0)); board[3][3] = 1; board[3][4] = 2; board[4][3] = 2; board[4][4] = 1; currentPlayer = 1; isGameOver = false; showingKanji = null; isGameStarted = false; passedHistory.clear(); historyStack = []; setSettingsLock(false); setUILock(false); initBoardDOM(); updateBoard(); updateUI(); updateUndoButton(); }
+    function resetBoardData(gen = true) { 
+        if (isAnimating) return; 
+        if (gen) currentWords = generateWords(); 
+        board = Array(8).fill(0).map(() => Array(8).fill(0)); 
+        board[3][3] = 1; board[3][4] = 2; board[4][3] = 2; board[4][4] = 1; 
+        currentPlayer = 1; isGameOver = false; showingKanji = null; isGameStarted = false; 
+        passedHistory.clear(); historyStack = []; 
+        setSettingsLock(false); setUILock(false); initBoardDOM(); updateBoard(); updateUI(); updateUndoButton(); 
+    }
+    
     function initGame() { resetBoardData(true); }
 
     document.getElementById('btn-undo').onclick = () => {
