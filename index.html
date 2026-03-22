@@ -10,69 +10,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
   
   <style>
-    body {
-      font-family: 'UD デジタル 教科書体 NK-R', 'UD デジタル 教科書体 N-R', 'Klee One', 'Yu Mincho', 'BIZ UDPMincho', serif;
-    }
-    
-    .font-maru {
-      font-family: 'Zen Maru Gothic', 'UD デジタル 教科書体 NK-R', sans-serif;
-    }
-
-    .font-kyokasho {
-      font-family: 'UD デジタル 教科書体 NK-R', 'Klee One', serif;
-    }
-
+    body { font-family: 'UD デジタル 教科書体 NK-R', 'UD デジタル 教科書体 N-R', 'Klee One', 'Yu Mincho', 'BIZ UDPMincho', serif; }
+    .font-maru { font-family: 'Zen Maru Gothic', 'UD デジタル 教科書体 NK-R', sans-serif; }
+    .font-kyokasho { font-family: 'UD デジタル 教科書体 NK-R', 'Klee One', serif; }
     .stone-container { perspective: 1000px; }
-    .stone {
-      transition: transform 1.0s cubic-bezier(0.4, 0.0, 0.2, 1);
-      transform-style: preserve-3d;
-    }
+    .stone { transition: transform 1.0s cubic-bezier(0.4, 0.0, 0.2, 1); transform-style: preserve-3d; }
     .stone.flipped { transform: rotateY(180deg); }
-    .stone-face {
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
+    .stone-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
     .stone-back { transform: rotateY(180deg); }
-
     .cell-flip-container { perspective: 1000px; container-type: inline-size; height: 100%; width: 100%; }
-    .cell-flip-inner {
-      transition: transform 1.0s cubic-bezier(0.4, 0.0, 0.2, 1);
-      transform-style: preserve-3d;
-    }
+    .cell-flip-inner { transition: transform 1.0s cubic-bezier(0.4, 0.0, 0.2, 1); transform-style: preserve-3d; }
     .cell-flip-inner.is-flipped { transform: rotateY(180deg); }
-    .cell-flip-face {
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
+    .cell-flip-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
     .cell-flip-back { transform: rotateY(180deg); }
-
-    @keyframes bounce-subtle {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
+    @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     .animate-bounce-subtle { animation: bounce-subtle 2s infinite ease-in-out; }
-
-    @keyframes pulse-glow-p1 {
-      0%, 100% { background-color: #0c4a6e; box-shadow: inset 0 0 0 2px #0ea5e9; }
-      50% { background-color: #075985; box-shadow: inset 0 0 0 4px #38bdf8, inset 0 0 20px #38bdf8; }
-    }
-    
-    @keyframes pulse-glow-p2 {
-      0%, 100% { background-color: #831843; box-shadow: inset 0 0 0 2px #db2777; }
-      50% { background-color: #9d174d; box-shadow: inset 0 0 0 4px #f472b6, inset 0 0 20px #f472b6; }
-    }
-
-    .active-player-card {
-      background: white !important;
-      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3) !important;
-      transform: scale(1.08) translateY(-10px);
-      z-index: 30;
-      border: 4px solid white !important;
-    }
-
+    @keyframes pulse-glow-p1 { 0%, 100% { background-color: #0c4a6e; box-shadow: inset 0 0 0 2px #0ea5e9; } 50% { background-color: #075985; box-shadow: inset 0 0 0 4px #38bdf8, inset 0 0 20px #38bdf8; } }
+    @keyframes pulse-glow-p2 { 0%, 100% { background-color: #831843; box-shadow: inset 0 0 0 2px #db2777; } 50% { background-color: #9d174d; box-shadow: inset 0 0 0 4px #f472b6, inset 0 0 20px #f472b6; } }
+    .active-player-card { background: white !important; box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3) !important; transform: scale(1.08) translateY(-10px); z-index: 30; border: 4px solid white !important; }
     select { appearance: none; -webkit-appearance: none; }
     * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-
     .can-move-p1 { animation: pulse-glow-p1 1.5s infinite ease-in-out !important; cursor: pointer; }
     .can-move-p2 { animation: pulse-glow-p2 1.5s infinite ease-in-out !important; cursor: pointer; }
     .showing-highlight { box-shadow: 0 0 0 4px white, 0 0 15px rgba(255, 255, 255, 0.9) !important; z-index: 40; }
@@ -87,13 +44,8 @@
     
     <div class="relative z-10">
       <h1 class="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] leading-tight text-center md:text-left flex items-center justify-center md:justify-start gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M11.646 3.097c.216-.453.864-.453 1.08 0l1.411 2.96 3.197.464c.485.07.68.67.329 1.01l-2.314 2.253.546 3.185c.083.483-.424.85-.857.625L12 11.96l-2.86 1.505c-.433.227-.94-.142-.857-.625l.546-3.185-2.314-2.253c-.351-.34-.156-.94.33-1.01l3.196-.464 1.412-2.96z"/>
-        </svg>
-        <span class="flex flex-col whitespace-nowrap text-left">
-          <span>４年漢字バトル！</span>
-          <span>めくってオセロ</span>
-        </span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M11.646 3.097c.216-.453.864-.453 1.08 0l1.411 2.96 3.197.464c.485.07.68.67.329 1.01l-2.314 2.253.546 3.185c.083.483-.424.85-.857.625L12 11.96l-2.86 1.505c-.433.227-.94-.142-.857-.625l.546-3.185-2.314-2.253c-.351-.34-.156-.94.33-1.01l3.196-.464 1.412-2.96z"/></svg>
+        <span class="flex flex-col whitespace-nowrap text-left"><span>４年漢字バトル！</span><span>めくってオセロ</span></span>
       </h1>
       <button id="btn-help" class="bg-white text-orange-600 border-2 border-orange-400 font-black py-1 px-6 rounded-full text-sm shadow-[0_4px_0_#fb923c] active:translate-y-1 transition-all mx-auto md:ml-0 mt-1 block">あそびかた</button>
     </div>
@@ -102,30 +54,21 @@
       <div class="absolute top-[-10px] right-[-10px] w-16 h-16 bg-white opacity-20 rounded-full blur-xl pointer-events-none"></div>
       <div class="text-base font-black text-white drop-shadow-md tracking-wider flex justify-between items-center">
         <span>もんだいの設定</span>
-        <svg id="lock-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white opacity-0 transition-opacity duration-300" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-        </svg>
+        <svg id="lock-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white opacity-0 transition-opacity duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
       </div>
       <div class="flex flex-col gap-2 relative z-10">
         <select id="select-length" class="w-full bg-white text-orange-900 border-b-4 border-orange-200 py-2.5 px-4 rounded-xl text-lg font-black focus:outline-none cursor-pointer disabled:opacity-70 disabled:bg-gray-200 disabled:text-gray-500 disabled:border-gray-300 disabled:cursor-not-allowed transition-all leading-tight">
-          <option value="2">熟語 2文字</option>
-          <option value="1">漢字 1文字</option>
+          <option value="2">熟語 2文字</option><option value="1">漢字 1文字</option>
         </select>
         <select id="select-grade" class="w-full bg-white text-orange-900 border-b-4 border-orange-200 py-2.5 px-4 rounded-xl text-lg font-black focus:outline-none cursor-pointer disabled:opacity-70 disabled:bg-gray-200 disabled:text-gray-500 disabled:border-gray-300 disabled:cursor-not-allowed transition-all leading-tight">
-          <option value="only4">4年生の漢字</option>
-          <option value="upTo3">1〜3年生の漢字</option>
-          <option value="custom" id="opt-custom" disabled>先生のオリジナル問題</option>
+          <option value="only4">4年生の漢字</option><option value="upTo3">1〜3年生の漢字</option><option value="custom" id="opt-custom" disabled>先生のオリジナル問題</option>
         </select>
       </div>
       <button id="btn-import-csv" class="relative z-10 w-full mt-1 bg-white text-orange-600 border-2 border-orange-300 font-black py-1.5 rounded-lg text-xs shadow-sm hover:bg-orange-50 transition-colors flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
         問題データを読み込む
       </button>
-      <div class="relative z-10 text-right">
-        <button id="btn-csv-help" class="text-[10px] text-white font-bold underline hover:text-orange-200 transition-colors">※オリジナル問題の作り方</button>
-      </div>
+      <div class="relative z-10 text-right"><button id="btn-csv-help" class="text-[10px] text-white font-bold underline hover:text-orange-200 transition-colors">※オリジナル問題の作り方</button></div>
       <input type="file" id="file-upload" accept=".csv" class="hidden">
     </div>
 
@@ -165,30 +108,16 @@
     <div class="mt-4 text-[10px] md:text-sm text-gray-500 font-bold tracking-widest text-center tracking-tighter">&copy;2026 4年漢字バトル！めくってオセロ ICT支援の杜</div>
   </main>
 
-  <!-- ゲーム終了時のモーダル -->
+  <!-- Modals -->
   <div id="modal-clear" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[100] backdrop-blur-md p-4">
     <div class="bg-white w-full max-w-4xl rounded-[2rem] shadow-2xl border-8 border-yellow-400 text-center p-6 transform scale-0 transition-transform duration-500 flex flex-col max-h-[90vh]" id="clear-content">
       <h2 class="text-3xl md:text-4xl font-black mb-2 flex-shrink-0">しゅうりょう！</h2>
       <div id="winner-text" class="text-xl md:text-2xl font-bold mb-4 p-4 rounded-2xl border-4 flex-shrink-0"></div>
-      
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 overflow-y-auto flex-1 min-h-0 text-left">
-        <div class="bg-sky-50 rounded-xl overflow-hidden border-2 border-sky-200 flex flex-col">
-          <h3 class="font-bold text-sky-800 text-center bg-sky-200 py-1.5 text-sm">水色が獲得</h3>
-          <div id="p1-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-sky-50 font-sans"></div>
-        </div>
-        <div class="bg-pink-50 rounded-xl overflow-hidden border-2 border-pink-200 flex flex-col">
-          <h3 class="font-bold text-pink-800 text-center bg-pink-200 py-1.5 text-sm">ピンクが獲得</h3>
-          <div id="p2-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-pink-50 font-sans"></div>
-        </div>
-        <div class="bg-gray-100 rounded-xl overflow-hidden border-2 border-red-300 flex flex-col shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-          <h3 class="font-bold text-red-700 text-center bg-red-100 py-1.5 text-sm flex flex-col leading-tight">
-            <span>復習リスト</span>
-            <span class="text-[10px] font-normal text-red-600">（パス・未獲得）</span>
-          </h3>
-          <div id="pass-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-gray-50 font-sans"></div>
-        </div>
+        <div class="bg-sky-50 rounded-xl overflow-hidden border-2 border-sky-200 flex flex-col"><h3 class="font-bold text-sky-800 text-center bg-sky-200 py-1.5 text-sm">水色が獲得</h3><div id="p1-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-sky-50 font-sans"></div></div>
+        <div class="bg-pink-50 rounded-xl overflow-hidden border-2 border-pink-200 flex flex-col"><h3 class="font-bold text-pink-800 text-center bg-pink-200 py-1.5 text-sm">ピンクが獲得</h3><div id="p2-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-pink-50 font-sans"></div></div>
+        <div class="bg-gray-100 rounded-xl overflow-hidden border-2 border-red-300 flex flex-col shadow-[0_0_15px_rgba(239,68,68,0.2)]"><h3 class="font-bold text-red-700 text-center bg-red-100 py-1.5 text-sm flex flex-col leading-tight"><span>復習リスト</span><span class="text-[10px] font-normal text-red-600">（パス・未獲得）</span></h3><div id="pass-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-gray-50 font-sans"></div></div>
       </div>
-
       <div class="flex gap-2 flex-shrink-0">
         <button id="btn-restart" class="flex-1 bg-emerald-500 text-white font-bold py-4 rounded-xl text-xl shadow-lg active:scale-95 transition-all">もう一度遊ぶ</button>
         <button id="btn-close-clear" class="w-1/3 bg-gray-400 text-white font-bold py-4 rounded-xl text-xl shadow-lg active:scale-95 transition-all">とじる</button>
@@ -198,18 +127,14 @@
   
   <div id="modal-pass" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[90] backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none">
     <div class="bg-white px-8 py-6 rounded-3xl shadow-2xl border-4 border-orange-400 text-center transform scale-90 transition-transform duration-300" id="pass-content">
-      <div class="text-3xl font-black text-orange-600 mb-2">パス！</div>
-      <div class="text-lg font-bold text-gray-600">おける場所がありません</div>
+      <div class="text-3xl font-black text-orange-600 mb-2">パス！</div><div class="text-lg font-bold text-gray-600">おける場所がありません</div>
     </div>
   </div>
 
   <div id="modal-confirm" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[100] backdrop-blur-sm transition-opacity duration-300 opacity-0">
     <div class="bg-white px-6 py-8 rounded-3xl shadow-2xl border-4 border-red-500 text-center transform scale-90 transition-transform duration-300 w-11/12 max-w-sm" id="confirm-content">
       <div class="text-2xl font-black text-red-600 mb-4 flex items-center justify-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        ちゅうい！
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>ちゅうい！
       </div>
       <div id="confirm-message" class="text-lg font-bold text-gray-700 mb-6 leading-relaxed text-left"></div>
       <div class="flex gap-3">
@@ -221,12 +146,7 @@
 
   <div id="modal-help" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[110] backdrop-blur-sm transition-opacity duration-300 opacity-0 p-4">
     <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-sky-400 transform scale-90 transition-transform duration-300 w-full max-w-lg flex flex-col" id="help-content">
-      <div class="text-xl md:text-2xl font-black text-sky-600 mb-4 flex items-center gap-2 border-b-2 border-sky-200 pb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        あそびかた
-      </div>
+      <div class="text-xl md:text-2xl font-black text-sky-600 mb-4 flex items-center gap-2 border-b-2 border-sky-200 pb-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>あそびかた</div>
       <div class="text-sm md:text-base font-bold text-gray-700 mb-6 leading-relaxed text-left space-y-3">
         <p class="flex gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">1</span> 置きたいマスをタップして、漢字をめくります。</p>
         <p class="flex gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">2</span> もう一度タップすると、石を置きます。</p>
@@ -239,28 +159,16 @@
 
   <div id="modal-csv-help" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[110] backdrop-blur-sm transition-opacity duration-300 opacity-0 p-4">
     <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-orange-400 transform scale-90 transition-transform duration-300 w-full max-w-lg max-h-[90vh] flex flex-col" id="csv-help-content">
-      <div class="text-xl md:text-2xl font-black text-orange-600 mb-4 flex items-center gap-2 border-b-2 border-orange-200 pb-2 flex-shrink-0">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        オリジナル問題の作り方
-      </div>
+      <div class="text-xl md:text-2xl font-black text-orange-600 mb-4 flex items-center gap-2 border-b-2 border-orange-200 pb-2 flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>オリジナル問題の作り方</div>
       <div class="text-sm md:text-base font-medium text-gray-700 mb-4 leading-relaxed overflow-y-auto flex-1 text-left space-y-4">
         <p>Excelなどの表計算ソフトを使って、以下のルールでデータを作成し、<strong class="text-red-500">CSV形式（カンマ区切り）</strong>で保存してください。</p>
         <div class="bg-gray-100 p-3 rounded-xl border border-gray-300 font-maru">
           <h3 class="font-bold text-gray-800 mb-2 border-b border-gray-300 pb-1">■ データの並び順（左から）</h3>
-          <ol class="list-decimal list-inside space-y-1 pl-1">
-            <li><strong>A列：</strong> ひらがな</li>
-            <li><strong>B列：</strong> 漢字（裏面の答え）</li>
-            <li><strong>C列：</strong> ヒント</li>
-          </ol>
+          <ol class="list-decimal list-inside space-y-1 pl-1"><li><strong>A列：</strong> ひらがな</li><li><strong>B列：</strong> 漢字（裏面の答え）</li><li><strong>C列：</strong> ヒント</li></ol>
         </div>
         <div class="bg-orange-50 p-3 rounded-xl border border-orange-200 font-maru">
           <h3 class="font-bold text-orange-800 mb-2 border-b border-orange-200 pb-1">■ 注意事項</h3>
-          <ul class="list-disc list-inside space-y-1 pl-1 text-orange-900 text-xs">
-            <li>データは<strong>最低60個</strong>必要です。</li>
-            <li>末尾約20個は「難しい問題」として四隅に配置されます。</li>
-          </ul>
+          <ul class="list-disc list-inside space-y-1 pl-1 text-orange-900 text-xs"><li>データは<strong>最低60個</strong>必要です。</li><li>末尾約20個は「難しい問題」として四隅に配置されます。</li></ul>
         </div>
       </div>
       <button id="btn-close-csv-help" class="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-xl text-lg shadow-md active:scale-95 transition-all flex-shrink-0">とじる</button>
@@ -268,6 +176,9 @@
   </div>
 
   <script>
+    // ==========================================
+    // Core Utilities & Data (Hardcoded DB)
+    // ==========================================
     function shuffleArray(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -276,25 +187,6 @@
       }
       return arr;
     }
-
-    let audioCtx = null;
-    const Sound = {
-      init() { 
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
-        }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume(); 
-        }
-      },
-      play(freq, type, duration, vol) { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime); gain.gain.setValueAtTime(vol, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration); },
-      playTap() { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.05); },
-      playPlace() { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.4, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1); },
-      playFlip() { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.1); gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.2); },
-      playPass() { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.2); },
-      playError() { this.init(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3); },
-      playWin() { const notes = [523, 659, 783, 1046]; notes.forEach((f, i) => { setTimeout(() => this.play(f, 'sine', 0.5, 0.15), i * 150); }); }
-    };
 
     const DB_UPTO3 = {
       len1: [{text:"みず",kanji:"水",hint:"のむもの"},{text:"やま",kanji:"山",hint:"たかい"},{text:"かわ",kanji:"川",hint:"ながれる"},{text:"き",kanji:"木",hint:"もりにある"},{text:"ひ",kanji:"日",hint:"たいよう"},{text:"つき",kanji:"月",hint:"よる"},{text:"ひ",kanji:"火",hint:"あつい"},{text:"つち",kanji:"土",hint:"じめん"},{text:"きん",kanji:"金",hint:"おかね"},{text:"ほん",kanji:"本",hint:"よむもの"},{text:"て",kanji:"手",hint:"つかむ"},{text:"あし",kanji:"足",hint:"あるく"},{text:"め",kanji:"目",hint:"みる"},{text:"みみ",kanji:"耳",hint:"きく"},{text:"くち",kanji:"口",hint:"たべる"},{text:"はな",kanji:"鼻",hint:"におい"},{text:"ひと",kanji:"人",hint:"にんげん"},{text:"こ",kanji:"子",hint:"こども"},{text:"おんな",kanji:"女",hint:"じょせい"},{text:"おとこ",kanji:"男",hint:"だんせい"},{text:"そら",kanji:"空",hint:"あおい"},{text:"うみ",kanji:"海",hint:"みず"},{text:"かぜ",kanji:"風",hint:"ふく"},{text:"おと",kanji:"音",hint:"きこえる"},{text:"あめ",kanji:"雨",hint:"ふる"},{text:"ゆき",kanji:"雪",hint:"しろい"},{text:"はる",kanji:"春",hint:"あたたかい"},{text:"なつ",kanji:"夏",hint:"あつい"},{text:"あき",kanji:"秋",hint:"すずしい"},{text:"ふゆ",kanji:"冬",hint:"さむい"},{text:"うえ",kanji:"上",hint:"たかい"},{text:"した",kanji:"下",hint:"ひくい"},{text:"ひだり",kanji:"左",hint:"て"},{text:"みぎ",kanji:"右",hint:"て"},{text:"まる",kanji:"円",hint:"かたち"},{text:"いし",kanji:"石",hint:"かたい"},{text:"た",kanji:"田",hint:"おこめ"},{text:"もり",kanji:"森",hint:"き"},{text:"むら",kanji:"村",hint:"まち"},{text:"なまえ",kanji:"名",hint:"よばれる"},{text:"あさ",kanji:"朝",hint:"おきる"},{text:"よる",kanji:"夜",hint:"ねる"},{text:"いけ",kanji:"池",hint:"みず"},{text:"はな",kanji:"花",hint:"さく"},{text:"くさ",kanji:"草",hint:"みどり"},{text:"うし",kanji:"牛",hint:"もーもー"},{text:"うま",kanji:"馬",hint:"ひひーん"},{text:"いぬ",kanji:"犬",hint:"わんわん"},{text:"むし",kanji:"虫",hint:"ちいさい"},{text:"かい",kanji:"貝",hint:"うみ"},{text:"たけ",kanji:"竹",hint:"のびる"},{text:"じ",kanji:"字",hint:"もじ"},{text:"え",kanji:"絵",hint:"かく"},{text:"こころ",kanji:"心",hint:"おもう"},{text:"ちから",kanji:"力",hint:"パワー"},{text:"もん",kanji:"門",hint:"いりぐち"},{text:"いろ",kanji:"色",hint:"あかあお"},{text:"まち",kanji:"町",hint:"すむところ"},{text:"いと",kanji:"糸",hint:"ぬう"},{text:"こえ",kanji:"声",hint:"だす"},{text:"くるま",kanji:"車",hint:"のりもの"},{text:"まなぶ",kanji:"学",hint:"べんきょう"},{text:"がっこう",kanji:"校",hint:"いくところ"},{text:"さき",kanji:"先",hint:"まえ"},{text:"いきる",kanji:"生",hint:"いのち"},{text:"とし",kanji:"年",hint:"カレンダー"},{text:"くみ",kanji:"組",hint:"クラス"},{text:"ひゃく",kanji:"百",hint:"かず"},{text:"せん",kanji:"千",hint:"かず"},{text:"まん",kanji:"万",hint:"かず"},{text:"たま",kanji:"玉",hint:"まるい"},{text:"おう",kanji:"王",hint:"えらい"},{text:"あか",kanji:"赤",hint:"いろ"},{text:"あお",kanji:"青",hint:"いろ"},{text:"しろ",kanji:"白",hint:"いろ"},{text:"くろ",kanji:"黒",hint:"いろ"},{text:"みる",kanji:"見",hint:"め"},{text:"たつ",kanji:"立",hint:"あし"},{text:"やすむ",kanji:"休",hint:"ねる"},{text:"はいる",kanji:"入",hint:"なかへ"},{text:"でる",kanji:"出",hint:"そとへ"},{text:"はやし",kanji:"林",hint:"き"},{text:"ゆう",kanji:"夕",hint:"よるのまえ"},{text:"てん",kanji:"天",hint:"そら"},{text:"き",kanji:"気",hint:"きもち"},{text:"はれ",kanji:"晴",hint:"いいてんき"},{text:"まる",kanji:"丸",hint:"かたち"},{text:"つの",kanji:"角",hint:"かたち"},{text:"ゆみ",kanji:"弓",hint:"ぶき"},{text:"や",kanji:"矢",hint:"とり"},{text:"かたな",kanji:"刀",hint:"きる"},{text:"むぎ",kanji:"麦",hint:"たべる"},{text:"こめ",kanji:"米",hint:"たべる"},{text:"まめ",kanji:"豆",hint:"たべる"},{text:"にく",kanji:"肉",hint:"たべる"},{text:"さかな",kanji:"魚",hint:"およぐ"},{text:"とり",kanji:"鳥",hint:"とぶ"},{text:"はね",kanji:"羽",hint:"とり"},{text:"け",kanji:"毛",hint:"ふさふさ"},{text:"ひつじ",kanji:"羊",hint:"メー"},{text:"ほし",kanji:"星",hint:"そら"},{text:"くも",kanji:"雲",hint:"そら"},{text:"たに",kanji:"谷",hint:"やまのあいだ"},{text:"いわ",kanji:"岩",hint:"いし"},{text:"は原",kanji:"原",hint:"ひろい"},{text:"の",kanji:"野",hint:"はらっぱ"},{text:"うた",kanji:"歌",hint:"うたう"},{text:"こたえ",kanji:"答",hint:"へんじ"},{text:"いう",kanji:"言",hint:"はなす"},{text:"はなし",kanji:"話",hint:"しゃべる"},{text:"かたる",kanji:"語",hint:"ことば"},{text:"よむ",kanji:"読",hint:"ほん"},{text:"かく",kanji:"書",hint:"もじ"},{text:"しるす",kanji:"記",hint:"メモ"},{text:"かみ",kanji:"紙",hint:"かく"},{text:"つくえ",kanji:"机",hint:"べんきょう"},{text:"かお",kanji:"顔",hint:"あたま"},{text:"ふね",kanji:"船",hint:"うみ"},{text:"みち",kanji:"道",hint:"あるく"},{text:"てん",kanji:"点",hint:"マーク"},{text:"はしる",kanji:"走",hint:"あし"},{text:"ひかり",kanji:"光",hint:"まぶしい"}],
@@ -306,380 +198,507 @@
       len2: [{text:"けんこう",kanji:"健康",hint:"じょうぶ"},{text:"きかい",kanji:"機械",hint:"こうじょう"},{text:"じてん",kanji:"辞典",hint:"しらべる"},{text:"しゅるい",kanji:"種類",hint:"なかま"},{text:"かんさつ",kanji:"観察",hint:"よくみる"},{text:"きょうそう",kanji:"競争",hint:"かけっこ"},{text:"しっぱい",kanji:"失敗",hint:"みす"},{text:"せいこう",kanji:"成功",hint:"うまくいく"},{text:"せつめい",kanji:"説明",hint:"おしえる"},{text:"きょうりょく",kanji:"協力",hint:"たすけあう"},{text:"くんれん",kanji:"訓練",hint:"れんしゅう"},{text:"どりょく",kanji:"努力",hint:"がんばる"},{text:"もくひょう",kanji:"目標",hint:"あて"},{text:"めんせき",kanji:"面積",hint:"ひろさ"},{text:"れんぞく",kanji:"連続",hint:"つづく"},{text:"がっき",kanji:"楽器",hint:"おとをだす"},{text:"かいぎ",kanji:"会議",hint:"はなしあう"},{text:"そつぎょう",kanji:"卒業",hint:"おえる"},{text:"やくそく",kanji:"約束",hint:"まもりごと"},{text:"めいれい",kanji:"命令",hint:"いいつける"},{text:"こうこく",kanji:"広告",hint:"ぽすたー"},{text:"さんぎょう",kanji:"産業",hint:"しごと"},{text:"せんきょ",kanji:"選挙",hint:"えらぶ"},{text:"しがい",kanji:"市街",hint:"まち"},{text:"とうひょう",kanji:"投票",hint:"えらぶ"},{text:"しゃりん",kanji:"車輪",hint:"わ"},{text:"えいご",kanji:"英語",hint:"ことば"},{text:"いちおく",kanji:"一億",hint:"かず"},{text:"くだもの",kanji:"果物",hint:"たべる"},{text:"かもつ",kanji:"貨物",hint:"にもつ"},{text:"はつが",kanji:"発芽",hint:"めがでる"},{text:"かいりょう",kanji:"改良",hint:"よくする"},{text:"こうがい",kanji:"公害",hint:"わるいもの"},{text:"かくじ",kanji:"各自",hint:"それぞれ"},{text:"けんこく",kanji:"建国",hint:"くに"},{text:"へいし",kanji:"兵士",hint:"たたかう"},{text:"ぼくじょう",kanji:"牧場",hint:"うし"},{text:"きせつ",kanji:"季節",hint:"はるなつ"},{text:"じしょ",kanji:"辞書",hint:"しらべる"},{text:"りそう",kanji:"理想",hint:"ねがい"},{text:"ゆうき",kanji:"勇気",hint:"ちから"},{text:"ろうどう",kanji:"労働",hint:"はたらく"},{text:"ちょきん",kanji:"貯金",hint:"おかね"},{text:"いちょう",kanji:"胃腸",hint:"おなか"},{text:"いんさつ",kanji:"印刷",hint:"プリント"},{text:"かちょう",kanji:"課長",hint:"やくしょく"},{text:"きゅうりょう",kanji:"給料",hint:"おかね"},{text:"ぎょぎょう",kanji:"漁業",hint:"さかな"},{text:"きょうつう",kanji:"共通",hint:"おなじ"},{text:"きょうだい",kanji:"鏡台",hint:"かがみ"},{text:"ぐんぶ",kanji:"郡部",hint:"ちいき"},{text:"けいき",kanji:"景気",hint:"けいざい"},{text:"けっせき",kanji:"欠席",hint:"やすむ"},{text:"けつまつ",kanji:"結末",hint:"さいご"},{text:"しりょう",kanji:"資料",hint:"データ"},{text:"あいけん",kanji:"愛犬",hint:"いぬ"},{text:"あんない",kanji:"案内",hint:"おしえる"},{text:"いじょう",kanji:"以上",hint:"それよりうえ"},{text:"いふく",kanji:"衣服",hint:"ふく"},{text:"いち",kanji:"位置",hint:"ばしょ"},{text:"しゅうい",kanji:"周囲",hint:"まわり"},{text:"えいゆう",kanji:"英雄",hint:"ヒーロー"},{text:"えいよう",kanji:"栄養",hint:"からだにいい"},{text:"えんぶん",kanji:"塩分",hint:"しお"},{text:"せいか",kanji:"成果",hint:"けっか"},{text:"かだい",kanji:"課題",hint:"テーマ"},{text:"しんめ",kanji:"新芽",hint:"あたらしいめ"},{text:"かんかく",kanji:"感覚",hint:"かんじる"},{text:"かんせい",kanji:"完成",hint:"できあがり"},{text:"ちょうかん",kanji:"長官",hint:"えらいひと"},{text:"かんり",kanji:"管理",hint:"まとめる"},{text:"かんけい",kanji:"関係",hint:"つながり"},{text:"ねんがん",kanji:"念願",hint:"ねがい"},{text:"きぼう",kanji:"希望",hint:"のぞみ"},{text:"しき",kanji:"四季",hint:"はるなつあきふゆ"},{text:"せいき",kanji:"世紀",hint:"ひゃくねん"},{text:"こっき",kanji:"国旗",hint:"くにのはた"},{text:"きぐ",kanji:"器具",hint:"どうぐ"},{text:"きかい",kanji:"機会",hint:"チャンス"},{text:"ようきゅう",kanji:"要求",hint:"もとめる"},{text:"ごうきゅう",kanji:"号泣",hint:"なく"},{text:"きゅうじょ",kanji:"救助",hint:"たすける"},{text:"きゅうしょく",kanji:"給食",hint:"おひるごはん"},{text:"きょうどう",kanji:"共同",hint:"いっしょに"},{text:"ちょっけい",kanji:"直径",hint:"まるのながさ"},{text:"てんけい",kanji:"典型",hint:"パターン"},{text:"ふうけい",kanji:"風景",hint:"けしき"},{text:"けつごう",kanji:"結合",hint:"くっつく"},{text:"けんぜん",kanji:"健全",hint:"けんこう"},{text:"じっけん",kanji:"実験",hint:"ためす"},{text:"しけん",kanji:"試験",hint:"テスト"},{text:"こてい",kanji:"固定",hint:"うごかない"},{text:"きこう",kanji:"気候",hint:"てんき"},{text:"こうくう",kanji:"航空",hint:"そらをとぶ"},{text:"さべつ",kanji:"差別",hint:"わける"},{text:"やさい",kanji:"野菜",hint:"たべる"},{text:"さい最高",kanji:"最高",hint:"いちばん"},{text:"もくざい",kanji:"木材",hint:"きのいた"},{text:"きのう",kanji:"昨日",hint:"まえのひ"},{text:"とくべつ",kanji:"特別",hint:"ほかとちがう"},{text:"さんか",kanji:"参加",hint:"くわわる"},{text:"さんぽ",kanji:"散歩",hint:"あるく"},{text:"あいこく",kanji:"愛国",hint:"くに"},{text:"いか",kanji:"以下",hint:"それよりした"},{text:"えい英文",kanji:"英文",hint:"えいご"},{text:"えいこう",kanji:"栄光",hint:"ひかり"},{text:"えんすい",kanji:"塩水",hint:"しょっぱい"},{text:"おくまん",kanji:"億万",hint:"かず"},{text:"かさん",kanji:"加算",hint:"たす"},{text:"かじつ",kanji:"果実",hint:"み"},{text:"かいぎょう",kanji:"改行",hint:"つぎのぎょう"},{text:"がいちゅう",kanji:"害虫",hint:"むし"},{text:"まちかど",kanji:"街角",hint:"かど"},{text:"だいじん",kanji:"大臣",hint:"えらいひと"},{text:"せきしょ",kanji:"関所",hint:"むかしのばしょ"},{text:"がんぼう",kanji:"願望",hint:"ねがい"},{text:"だいき",kanji:"大喜",hint:"よろこぶ"},{text:"きゅうしゅつ",kanji:"救出",hint:"たすける"},{text:"きょしゅ",kanji:"挙手",hint:"てをあげる"},{text:"ぎょせん",kanji:"漁船",hint:"さかなのふね"},{text:"てかがみ",kanji:"手鏡",hint:"みる"},{text:"はんけい",kanji:"半径",hint:"まるのながさ"},{text:"おおがた",kanji:"大型",hint:"おおきい"},{text:"けしき",kanji:"景色",hint:"みる"},{text:"けってん",kanji:"欠点",hint:"わるいところ"},{text:"けっせい",kanji:"結成",hint:"チーム"},{text:"たいけん",kanji:"体験",hint:"けいけん"},{text:"てんこう",kanji:"天候",hint:"てんき"},{text:"こうかい",kanji:"航海",hint:"ふね"},{text:"こくはく",kanji:"告白",hint:"つたえる"},{text:"てんさ",kanji:"点差",hint:"ちがい"},{text:"なふだ",kanji:"名札",hint:"なまえ"}]
     };
 
-    let customWords = [];
-    const DIRECTIONS = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
-    let board = [], currentPlayer = 1, isGameOver = false, isAnimating = false, isGameStarted = false;
-    let currentWords = [], currentLength = "2", currentGrade = "only4", showingKanji = null;
-    let pendingAction = null; let passedHistory = new Set(); let historyStack = [];
+    // ==========================================
+    // Classes
+    // ==========================================
 
-    const boardEl = document.getElementById('board');
-    const score1El = document.getElementById('score-1');
-    const score2El = document.getElementById('score-2');
-    const turnInd = document.getElementById('turn-indicator');
-    const p1Box = document.getElementById('p1-box');
-    const p2Box = document.getElementById('p2-box');
-    const controlPanel = document.getElementById('control-panel');
-    const boardOverlay = document.getElementById('board-overlay');
+    class SoundManager {
+      constructor() { this.audioCtx = null; }
+      init() { if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (this.audioCtx.state === 'suspended') this.audioCtx.resume(); }
+      play(freq, type, duration, vol) { this.init(); const osc = this.audioCtx.createOscillator(); const gain = this.audioCtx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime); gain.gain.setValueAtTime(vol, this.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration); osc.connect(gain); gain.connect(this.audioCtx.destination); osc.start(); osc.stop(this.audioCtx.currentTime + duration); }
+      playTap() { this.play(800, 'sine', 0.05, 0.1); }
+      playPlace() { this.init(); const osc = this.audioCtx.createOscillator(); const gain = this.audioCtx.createGain(); osc.type = 'triangle'; osc.frequency.setValueAtTime(150, this.audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(40, this.audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.4, this.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.1); osc.connect(gain); gain.connect(this.audioCtx.destination); osc.start(); osc.stop(this.audioCtx.currentTime + 0.1); }
+      playFlip() { this.init(); const osc = this.audioCtx.createOscillator(); const gain = this.audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(300, this.audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(600, this.audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0, this.audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.15, this.audioCtx.currentTime + 0.1); gain.gain.linearRampToValueAtTime(0, this.audioCtx.currentTime + 0.2); osc.connect(gain); gain.connect(this.audioCtx.destination); osc.start(); osc.stop(this.audioCtx.currentTime + 0.2); }
+      playPass() { this.play(440, 'triangle', 0.2, 0.1); }
+      playError() { this.play(150, 'sawtooth', 0.3, 0.2); }
+      playWin() { const notes = [523, 659, 783, 1046]; notes.forEach((f, i) => { setTimeout(() => this.play(f, 'sine', 0.5, 0.15), i * 150); }); }
+    }
 
-    document.getElementById('btn-import-csv').onclick = () => { 
-        if (isGameStarted) return; 
-        Sound.init();
-        document.getElementById('file-upload').click(); 
-    };
+    class DataModel {
+      constructor() {
+        this.customWords = [];
+        this.currentLength = "2";
+        this.currentGrade = "only4";
+        this.currentWords = [];
+        this.loadFromStorage();
+      }
 
-    // CSV読み込み処理の堅牢化（エンコーディング判定付き）
-    document.getElementById('file-upload').onchange = (e) => {
-      const file = e.target.files[0]; 
-      if (!file) return;
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        const buffer = event.target.result;
+      loadFromStorage() {
+        const saved = localStorage.getItem('othello_custom_words');
+        if (saved) {
+          try {
+            this.customWords = JSON.parse(saved);
+          } catch (e) {
+            console.error('Failed to parse saved custom words');
+            localStorage.removeItem('othello_custom_words');
+          }
+        }
+      }
+
+      parseCSV(buffer) {
         let text = "";
+        try { text = new TextDecoder('utf-8', { fatal: true }).decode(buffer); } 
+        catch (err) { text = new TextDecoder('shift_jis').decode(buffer); }
         
-        // 1. まずUTF-8としてデコードを試みる（エラーをスローさせる設定）
-        try {
-            const decoder = new TextDecoder('utf-8', { fatal: true });
-            text = decoder.decode(buffer);
-        } catch (err) {
-            // 2. UTF-8でエラーが出た場合（Excel等で作成）、Shift-JISでデコードする
-            console.warn("UTF-8 decode failed, falling back to Shift_JIS.");
-            const decoder = new TextDecoder('shift_jis');
-            text = decoder.decode(buffer);
-        }
-
-        const lines = text.split(/\r?\n/); 
+        const lines = text.split(/\r?\n/);
         let newCustomWords = [];
-        
         for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].trim(); 
+          const line = lines[i].trim();
           if (!line) continue;
-          
-          // 簡易的なCSVパース（ダブルクォートなどは考慮しない最低限のパース）
           const parts = line.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-          
-          if (parts.length >= 2 && parts[0] && parts[1]) { 
-            if (parts[0] === 'ひらがな' || parts[0] === 'テキスト') continue; // ヘッダー除外
-            newCustomWords.push({ 
-                text: parts[0], 
-                kanji: parts[1], 
-                hint: parts[2] || "" 
-            }); 
+          if (parts.length >= 2 && parts[0] && parts[1]) {
+            if (parts[0] === 'ひらがな' || parts[0] === 'テキスト') continue;
+            newCustomWords.push({ text: parts[0], kanji: parts[1], hint: parts[2] || "" });
           }
         }
+        if (newCustomWords.length < 60) throw new Error(`データが不足しています（現在 ${newCustomWords.length}個）。最低60個必要です。`);
+        this.customWords = newCustomWords;
+        this.currentGrade = 'custom';
         
-        if (newCustomWords.length < 60) { 
-            alert(`データが不足しています（現在 ${newCustomWords.length}個）。最低60個必要です。`); 
-            return; 
+        // 永続化処理を追加
+        localStorage.setItem('othello_custom_words', JSON.stringify(this.customWords));
+      }
+
+      generateWords() {
+        let list = [];
+        if (this.currentGrade === 'custom') list = this.customWords;
+        else {
+          const db = (this.currentGrade === "upTo3" ? DB_UPTO3 : DB_ONLY4);
+          list = (this.currentLength === "1" ? db.len1 : db.len2);
         }
+        const hardCount = Math.min(20, Math.floor(list.length / 4));
+        const normalList = list.slice(0, list.length - hardCount);
+        const hardList = list.slice(list.length - hardCount);
+        let normalPool = shuffleArray([...normalList]);
+        let hardPool = shuffleArray([...hardList]);
         
-        customWords = newCustomWords; 
-        document.getElementById('opt-custom').disabled = false;
-        document.getElementById('select-grade').value = 'custom'; 
-        currentGrade = 'custom'; 
-        alert(`成功！ ${newCustomWords.length}個の問題を読み込みました。`); 
-        resetBoardData(true);
-      };
-      
-      // 文字コード自動判定のため ArrayBuffer として読み込む
-      reader.readAsArrayBuffer(file); 
-      e.target.value = '';
-    };
-
-    function setUILock(locked) { 
-        isAnimating = locked; 
-        if (locked) { 
-            controlPanel.classList.add('ui-locked'); 
-            boardOverlay.classList.remove('hidden'); 
-        } else { 
-            controlPanel.classList.remove('ui-locked'); 
-            boardOverlay.classList.add('hidden'); 
-        } 
-    }
-    
-    function setSettingsLock(locked) { 
-        const selLen = document.getElementById('select-length'), selGrd = document.getElementById('select-grade'), btnImport = document.getElementById('btn-import-csv'), panel = document.getElementById('settings-panel'), lockIcon = document.getElementById('lock-icon'); 
-        selLen.disabled = locked; selGrd.disabled = locked; btnImport.disabled = locked; 
-        if (locked) { 
-            panel.classList.add('opacity-80', 'grayscale-[0.4]'); 
-            lockIcon.classList.remove('opacity-0'); 
-        } else { 
-            panel.classList.remove('opacity-80', 'grayscale-[0.4]'); 
-            lockIcon.classList.add('opacity-0'); 
-        } 
-    }
-    
-    function updateUndoButton() { 
-        const btnUndo = document.getElementById('btn-undo'); 
-        if (historyStack.length > 0 && isGameStarted) { 
-            btnUndo.disabled = false; 
-            btnUndo.classList.remove('opacity-50', 'cursor-not-allowed'); 
-        } else { 
-            btnUndo.disabled = true; 
-            btnUndo.classList.add('opacity-50', 'cursor-not-allowed'); 
-        } 
-    }
-
-    function saveState() {
-      historyStack.push({ board: JSON.parse(JSON.stringify(board)), currentPlayer: currentPlayer, passedHistory: Array.from(passedHistory) });
-      updateUndoButton();
-    }
-
-    function updateUI() {
-      let s1 = 0, s2 = 0; 
-      board.forEach(row => row.forEach(v => { if(v===1)s1++; if(v===2)s2++; }));
-      score1El.innerText = s1; score2El.innerText = s2;
-      document.body.classList.remove('bg-slate-200', 'bg-sky-100', 'bg-pink-100');
-      
-      if (currentPlayer === 1) {
-        document.body.classList.add('bg-sky-100'); 
-        turnInd.innerText = "水色のターン！"; 
-        turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-sky-300 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
-        p1Box.classList.add('active-player-card'); p2Box.classList.remove('active-player-card');
-      } else {
-        document.body.classList.add('bg-pink-100'); 
-        turnInd.innerText = "ピンクのターン！"; 
-        turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-pink-400 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
-        p2Box.classList.add('active-player-card'); p1Box.classList.remove('active-player-card');
+        while (hardPool.length < 4) hardPool = hardPool.concat(shuffleArray([...hardList]));
+        while (normalPool.length < 56) normalPool = normalPool.concat(shuffleArray([...normalList]));
+        
+        let selectedHard = hardPool.slice(0, 4);
+        let selectedNormal = normalPool.slice(0, 56);
+        let words = Array(64).fill(null);
+        const corners = [0, 7, 56, 63], centers = [27, 28, 35, 36];
+        let normalIdx = 0, hardIdx = 0;
+        
+        for (let i = 0; i < 64; i++) {
+          if (centers.includes(i)) words[i] = { text: "", kanji: "", hint: "" };
+          else if (corners.includes(i)) words[i] = selectedHard[hardIdx++];
+          else words[i] = selectedNormal[normalIdx++];
+        }
+        this.currentWords = words;
+        return words;
       }
     }
 
-    function updateBoard(showHints = true) {
-      for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-          const val = board[r][c], inner = document.getElementById(`cell-inner-${r}-${c}`), sC = document.getElementById(`s-cont-${r}-${c}`), front = document.getElementById(`face-front-${r}-${c}`), mWrap = document.getElementById(`marker-wrap-${r}-${c}`), dot = document.getElementById(`dot-${r}-${c}`);
-          const isShowingThis = showingKanji && showingKanji.r === r && showingKanji.c === c;
-          const canMove = showHints && !isGameOver && getFlippable(r, c, currentPlayer).length > 0;
-          
-          if (isShowingThis) { 
-              inner.classList.add('is-flipped'); inner.classList.add('showing-highlight'); 
-          } else { 
-              inner.classList.remove('is-flipped'); inner.classList.remove('showing-highlight'); 
+    class BoardModel {
+      constructor() {
+        this.directions = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+        this.reset();
+      }
+
+      reset() {
+        this.board = Array(8).fill(0).map(() => Array(8).fill(0));
+        this.board[3][3] = 1; this.board[3][4] = 2; this.board[4][3] = 2; this.board[4][4] = 1;
+        this.currentPlayer = 1;
+        this.isGameOver = false;
+        this.showingKanji = null; // {r, c}
+        this.isGameStarted = false;
+        this.passedHistory = new Set();
+        this.historyStack = [];
+      }
+
+      saveState() {
+        this.historyStack.push({ board: JSON.parse(JSON.stringify(this.board)), currentPlayer: this.currentPlayer, passedHistory: Array.from(this.passedHistory) });
+      }
+
+      restoreState() {
+        if (this.historyStack.length === 0) return false;
+        const state = this.historyStack.pop();
+        this.board = state.board;
+        this.currentPlayer = state.currentPlayer;
+        this.passedHistory = new Set(state.passedHistory);
+        this.isGameOver = false;
+        this.showingKanji = null;
+        if (this.historyStack.length === 0) this.isGameStarted = false;
+        return true;
+      }
+
+      getScores() {
+        let s1 = 0, s2 = 0;
+        this.board.forEach(r => r.forEach(v => { if(v===1)s1++; if(v===2)s2++; }));
+        return {s1, s2};
+      }
+
+      getFlippable(r, c, p) {
+        if (this.board[r][c] !== 0) return [];
+        let flips = [];
+        const opp = p === 1 ? 2 : 1;
+        for (let [dr, dc] of this.directions) {
+          let nr = r + dr, nc = c + dc, path = [];
+          while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && this.board[nr][nc] === opp) {
+            path.push({r: nr, c: nc}); nr += dr; nc += dc;
           }
-          
-          front.classList.remove('can-move-p1', 'can-move-p2');
-          if (val === 0 && canMove && !showingKanji) { 
-              if (currentPlayer === 1) front.classList.add('can-move-p1'); else front.classList.add('can-move-p2'); 
-              mWrap.classList.remove('hidden'); dot.style.backgroundColor = currentPlayer === 1 ? '#38bdf8' : '#f472b6'; 
-          } else { 
-              mWrap.classList.add('hidden'); 
+          if (path.length > 0 && nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && this.board[nr][nc] === p) flips = flips.concat(path);
+        }
+        return flips;
+      }
+
+      hasValidMoves(p) {
+        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (this.getFlippable(r, c, p).length > 0) return true;
+        return false;
+      }
+    }
+
+    class GameView {
+      constructor() {
+        this.boardEl = document.getElementById('board');
+        this.score1El = document.getElementById('score-1');
+        this.score2El = document.getElementById('score-2');
+        this.turnInd = document.getElementById('turn-indicator');
+        this.p1Box = document.getElementById('p1-box');
+        this.p2Box = document.getElementById('p2-box');
+        this.controlPanel = document.getElementById('control-panel');
+        this.boardOverlay = document.getElementById('board-overlay');
+        this.btnUndo = document.getElementById('btn-undo');
+        this.isAnimating = false;
+      }
+
+      bindEvents(controller) {
+        document.getElementById('btn-import-csv').onclick = () => controller.handleImportClick();
+        document.getElementById('file-upload').onchange = (e) => controller.handleFileChange(e);
+        this.btnUndo.onclick = () => controller.handleUndo();
+        document.getElementById('btn-pass').onclick = () => controller.handlePass();
+        document.getElementById('btn-reset').onclick = () => controller.showConfirm('reset');
+        document.getElementById('btn-shuffle').onclick = () => controller.showConfirm('shuffle');
+        document.getElementById('btn-restart').onclick = () => controller.handleRestart();
+        document.getElementById('select-length').onchange = (e) => controller.handleSettingsChange('length', e.target.value);
+        document.getElementById('select-grade').onchange = (e) => controller.handleSettingsChange('grade', e.target.value);
+        
+        // Modals
+        document.getElementById('btn-confirm-no').onclick = () => controller.closeConfirm();
+        document.getElementById('btn-confirm-yes').onclick = () => controller.executeConfirm();
+        document.getElementById('btn-csv-help').onclick = () => controller.showModal('modal-csv-help', 'csv-help-content');
+        document.getElementById('btn-close-csv-help').onclick = () => controller.closeModal('modal-csv-help');
+        document.getElementById('btn-help').onclick = () => controller.showModal('modal-help', 'help-content');
+        document.getElementById('btn-close-help').onclick = () => controller.closeModal('modal-help');
+        document.getElementById('btn-close-clear').onclick = () => { controller.sound.playTap(); document.getElementById('modal-clear').classList.add('hidden'); };
+      }
+
+      initSettingsUI(hasCustomData) {
+        const optCustom = document.getElementById('opt-custom');
+        if (hasCustomData) {
+          optCustom.disabled = false;
+        }
+      }
+
+      setUILock(locked) {
+        this.isAnimating = locked;
+        if (locked) { this.controlPanel.classList.add('ui-locked'); this.boardOverlay.classList.remove('hidden'); } 
+        else { this.controlPanel.classList.remove('ui-locked'); this.boardOverlay.classList.add('hidden'); }
+      }
+
+      setSettingsLock(locked) {
+        const selLen = document.getElementById('select-length'), selGrd = document.getElementById('select-grade'), btnImport = document.getElementById('btn-import-csv'), panel = document.getElementById('settings-panel'), lockIcon = document.getElementById('lock-icon');
+        selLen.disabled = locked; selGrd.disabled = locked; btnImport.disabled = locked;
+        if (locked) { panel.classList.add('opacity-80', 'grayscale-[0.4]'); lockIcon.classList.remove('opacity-0'); } 
+        else { panel.classList.remove('opacity-80', 'grayscale-[0.4]'); lockIcon.classList.add('opacity-0'); }
+      }
+
+      updateUndoButton(canUndo) {
+        if (canUndo) { this.btnUndo.disabled = false; this.btnUndo.classList.remove('opacity-50', 'cursor-not-allowed'); } 
+        else { this.btnUndo.disabled = true; this.btnUndo.classList.add('opacity-50', 'cursor-not-allowed'); }
+      }
+
+      updateUI(state) {
+        const {s1, s2} = state.getScores();
+        this.score1El.innerText = s1; this.score2El.innerText = s2;
+        document.body.classList.remove('bg-slate-200', 'bg-sky-100', 'bg-pink-100');
+        if (state.currentPlayer === 1) {
+          document.body.classList.add('bg-sky-100');
+          this.turnInd.innerText = "水色のターン！";
+          this.turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-sky-300 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
+          this.p1Box.classList.add('active-player-card'); this.p2Box.classList.remove('active-player-card');
+        } else {
+          document.body.classList.add('bg-pink-100');
+          this.turnInd.innerText = "ピンクのターン！";
+          this.turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-pink-400 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
+          this.p2Box.classList.add('active-player-card'); this.p1Box.classList.remove('active-player-card');
+        }
+      }
+
+      initBoardDOM(words, cellClickHandler) {
+        this.boardEl.innerHTML = '';
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            const word = words[r * 8 + c], cell = document.createElement('div');
+            cell.className = 'relative w-full h-full cell-flip-container cursor-pointer';
+            cell.onclick = () => cellClickHandler(r, c);
+            const inner = document.createElement('div'); inner.id = `cell-inner-${r}-${c}`; inner.className = 'cell-flip-inner absolute inset-0 w-full h-full border border-emerald-950 rounded-sm shadow-inner bg-emerald-700';
+            const f = document.createElement('div'); f.id = `face-front-${r}-${c}`; f.className = 'cell-flip-face font-kyokasho absolute inset-0 bg-emerald-700 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
+            const b = document.createElement('div'); b.className = 'cell-flip-face font-kyokasho cell-flip-back absolute inset-0 bg-emerald-600 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
+            if (word && word.text) {
+              const t = document.createElement('div'); const charLen = word.text.length;
+              t.style.fontSize = (charLen === 1) ? '48cqw' : (charLen === 2) ? '34cqw' : (charLen === 3) ? '26cqw' : '20cqw';
+              t.className = 'text-white font-black text-center leading-none drop-shadow-md w-full break-all px-0.5'; t.innerText = word.text; f.appendChild(t);
+              const h = document.createElement('div'); h.className = 'text-yellow-200 font-bold text-[7px] md:text-[10px] text-center leading-tight mt-1 w-full line-clamp-2'; h.innerText = word.hint; f.appendChild(h);
+              const k = document.createElement('div'); k.style.fontSize = (word.kanji.length === 1) ? '50cqw' : '30cqw';
+              k.className = 'text-white font-black text-center drop-shadow-lg w-full'; k.innerText = word.kanji; b.appendChild(k);
+            }
+            const sC = document.createElement('div'); sC.id = `s-cont-${r}-${c}`; sC.className = 'absolute inset-1 hidden z-30 pointer-events-none';
+            const s = document.createElement('div'); s.id = `stone-${r}-${c}`; s.className = 'stone w-full h-full rounded-full shadow-lg relative';
+            const sf1 = document.createElement('div'); sf1.className = 'stone-face absolute inset-0 rounded-full bg-sky-300 border-2 border-sky-400 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
+            const sf2 = document.createElement('div'); sf2.className = 'stone-face stone-back absolute inset-0 rounded-full bg-pink-400 border-2 border-pink-500 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
+            s.appendChild(sf1); s.appendChild(sf2); sC.appendChild(s);
+            const mWrap = document.createElement('div'); mWrap.id = `marker-wrap-${r}-${c}`; mWrap.className = 'absolute top-0.5 right-0.5 w-[15%] aspect-square hidden z-20 pointer-events-none rounded-full';
+            const dot = document.createElement('div'); dot.className = 'place-marker'; dot.id = `dot-${r}-${c}`; mWrap.appendChild(dot);
+            inner.appendChild(f); inner.appendChild(b); cell.appendChild(inner); cell.appendChild(sC); cell.appendChild(mWrap); this.boardEl.appendChild(cell);
           }
-          
-          if (val !== 0) { 
-              sC.classList.remove('hidden'); 
-              const stone = document.getElementById(`stone-${r}-${c}`); 
+        }
+      }
+
+      updateBoardState(state, showHints = true) {
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            const val = state.board[r][c], inner = document.getElementById(`cell-inner-${r}-${c}`), sC = document.getElementById(`s-cont-${r}-${c}`), front = document.getElementById(`face-front-${r}-${c}`), mWrap = document.getElementById(`marker-wrap-${r}-${c}`), dot = document.getElementById(`dot-${r}-${c}`);
+            const isShowingThis = state.showingKanji && state.showingKanji.r === r && state.showingKanji.c === c;
+            const canMove = showHints && !state.isGameOver && state.getFlippable(r, c, state.currentPlayer).length > 0;
+            
+            if (isShowingThis) { inner.classList.add('is-flipped', 'showing-highlight'); } 
+            else { inner.classList.remove('is-flipped', 'showing-highlight'); }
+            
+            front.classList.remove('can-move-p1', 'can-move-p2');
+            if (val === 0 && canMove && !state.showingKanji) { 
+              front.classList.add(state.currentPlayer === 1 ? 'can-move-p1' : 'can-move-p2'); 
+              mWrap.classList.remove('hidden'); dot.style.backgroundColor = state.currentPlayer === 1 ? '#38bdf8' : '#f472b6'; 
+            } else { mWrap.classList.add('hidden'); }
+            
+            if (val !== 0) { 
+              sC.classList.remove('hidden'); const stone = document.getElementById(`stone-${r}-${c}`); 
               if(val === 1) stone.classList.remove('flipped'); else stone.classList.add('flipped'); 
-          } else { 
-              sC.classList.add('hidden'); 
+            } else { sC.classList.add('hidden'); }
           }
         }
       }
-    }
 
-    function getFlippable(r, c, p) { 
-        if (board[r][c] !== 0) return []; 
-        let flips = []; 
-        const opp = p === 1 ? 2 : 1; 
-        for (let [dr, dc] of DIRECTIONS) { 
-            let nr = r + dr, nc = c + dc, path = []; 
-            while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === opp) { 
-                path.push({r: nr, c: nc}); nr += dr; nc += dc; 
-            } 
-            if (path.length > 0 && nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === p) flips = flips.concat(path); 
-        } 
-        return flips; 
-    }
-    
-    function hasValidMoves(p) { 
-        for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) if (getFlippable(r, c, p).length > 0) return true; 
-        return false; 
-    }
-
-    function generateWords() {
-      let list = []; 
-      if (currentGrade === 'custom') list = customWords; 
-      else { 
-          const db = (currentGrade === "upTo3" ? DB_UPTO3 : DB_ONLY4); 
-          list = (currentLength === "1" ? db.len1 : db.len2); 
-      }
-      const hardCount = Math.min(20, Math.floor(list.length / 4)); 
-      const normalList = list.slice(0, list.length - hardCount); 
-      const hardList = list.slice(list.length - hardCount);
-      let normalPool = shuffleArray([...normalList]); let hardPool = shuffleArray([...hardList]);
-      
-      while (hardPool.length < 4) hardPool = hardPool.concat(shuffleArray([...hardList]));
-      while (normalPool.length < 56) normalPool = normalPool.concat(shuffleArray([...normalList]));
-      
-      let selectedHard = hardPool.slice(0, 4); let selectedNormal = normalPool.slice(0, 56);
-      let words = Array(64).fill(null); 
-      const corners = [0, 7, 56, 63]; const centers = [27, 28, 35, 36]; 
-      let normalIdx = 0, hardIdx = 0;
-      
-      for (let i = 0; i < 64; i++) { 
-          if (centers.includes(i)) words[i] = { text: "", kanji: "", hint: "" }; 
-          else if (corners.includes(i)) words[i] = selectedHard[hardIdx++]; 
-          else words[i] = selectedNormal[normalIdx++]; 
-      }
-      return words;
-    }
-
-    function initBoardDOM() {
-      boardEl.innerHTML = '';
-      for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-          const idx = r * 8 + c, word = currentWords[idx], cell = document.createElement('div');
-          cell.className = 'relative w-full h-full cell-flip-container cursor-pointer';
-          cell.onclick = () => { Sound.init(); handleCell(r, c); };
-          
-          const inner = document.createElement('div'); inner.id = `cell-inner-${r}-${c}`;
-          inner.className = 'cell-flip-inner absolute inset-0 w-full h-full border border-emerald-950 rounded-sm shadow-inner bg-emerald-700';
-          
-          const f = document.createElement('div'); f.id = `face-front-${r}-${c}`; f.className = 'cell-flip-face font-kyokasho absolute inset-0 bg-emerald-700 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
-          const b = document.createElement('div'); b.className = 'cell-flip-face font-kyokasho cell-flip-back absolute inset-0 bg-emerald-600 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
-          
-          if (word && word.text) {
-            const t = document.createElement('div'); const charLen = word.text.length;
-            t.style.fontSize = (charLen === 1) ? '48cqw' : (charLen === 2) ? '34cqw' : (charLen === 3) ? '26cqw' : '20cqw';
-            t.className = 'text-white font-black text-center leading-none drop-shadow-md w-full break-all px-0.5'; t.innerText = word.text; f.appendChild(t);
-            const h = document.createElement('div'); h.className = 'text-yellow-200 font-bold text-[7px] md:text-[10px] text-center leading-tight mt-1 w-full line-clamp-2'; h.innerText = word.hint; f.appendChild(h);
-            const k = document.createElement('div'); k.style.fontSize = (word.kanji.length === 1) ? '50cqw' : '30cqw';
-            k.className = 'text-white font-black text-center drop-shadow-lg w-full'; k.innerText = word.kanji; b.appendChild(k);
-          }
-          
-          const sC = document.createElement('div'); sC.id = `s-cont-${r}-${c}`; sC.className = 'absolute inset-1 hidden z-30 pointer-events-none';
-          const s = document.createElement('div'); s.id = `stone-${r}-${c}`; s.className = 'stone w-full h-full rounded-full shadow-lg relative';
-          const sf1 = document.createElement('div'); sf1.className = 'stone-face absolute inset-0 rounded-full bg-sky-300 border-2 border-sky-400 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
-          const sf2 = document.createElement('div'); sf2.className = 'stone-face stone-back absolute inset-0 rounded-full bg-pink-400 border-2 border-pink-500 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
-          
-          s.appendChild(sf1); s.appendChild(sf2); sC.appendChild(s);
-          const mWrap = document.createElement('div'); mWrap.id = `marker-wrap-${r}-${c}`; mWrap.className = 'absolute top-0.5 right-0.5 w-[15%] aspect-square hidden z-20 pointer-events-none rounded-full';
-          const dot = document.createElement('div'); dot.className = 'place-marker'; dot.id = `dot-${r}-${c}`; mWrap.appendChild(dot);
-          
-          inner.appendChild(f); inner.appendChild(b); cell.appendChild(inner); cell.appendChild(sC); cell.appendChild(mWrap); boardEl.appendChild(cell);
-        }
-      }
-    }
-
-    async function handleCell(r, c) {
-      if (isGameOver || isAnimating) return; 
-      const flips = getFlippable(r, c, currentPlayer);
-      if (flips.length === 0 && (!showingKanji || showingKanji.r !== r || showingKanji.c !== c)) { 
-          Sound.playError(); return; 
-      }
-      
-      if (showingKanji && showingKanji.r === r && showingKanji.c === c) {
-        setUILock(true); saveState(); board[r][c] = currentPlayer; showingKanji = null; updateBoard(false); Sound.playPlace();
-        if (!isGameStarted) { isGameStarted = true; setSettingsLock(true); }
-        await new Promise(res => setTimeout(res, 800));
-        
-        for (let pos of flips) { 
-            board[pos.r][pos.c] = currentPlayer; updateBoard(false); Sound.playFlip(); 
-            await new Promise(res => setTimeout(res, 500)); 
-        }
-        await new Promise(res => setTimeout(res, 800));
-        
-        const nextPlayer = currentPlayer === 1 ? 2 : 1;
-        if (hasValidMoves(nextPlayer)) {
-            currentPlayer = nextPlayer; 
-        } else if (hasValidMoves(currentPlayer)) {
-            await showPassModal(); 
-        } else { 
-            checkGameOver(true); setUILock(false); return; 
-        }
-        setUILock(false); updateUI(); updateBoard(true); checkGameOver(false);
-      } else { 
-          showingKanji = { r, c }; Sound.playTap(); updateBoard(true); 
-      }
-    }
-
-    async function showPassModal() { 
-        Sound.playPass(); const modal = document.getElementById('modal-pass'), content = document.getElementById('pass-content'); modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); await new Promise(res => setTimeout(res, 1500)); modal.classList.add('opacity-0'); content.classList.add('scale-90'); await new Promise(res => setTimeout(res, 300)); modal.classList.add('hidden'); 
-    }
-
-    function checkGameOver(force = false) {
-      let s1=0, s2=0; board.forEach(row => row.forEach(v => { if(v===1)s1++; if(v===2)s2++; }));
-      if (force || s1+s2===64 || (!hasValidMoves(1) && !hasValidMoves(2))) {
-        isGameOver = true; Sound.playWin();
+      showGameOverModal(state, words) {
+        const {s1, s2} = state.getScores();
         const wt = document.getElementById('winner-text'); 
         wt.innerText = s1 > s2 ? "水色の勝ち！🎉" : (s2 > s1 ? "ピンクの勝ち！🎉" : "ひきわけ！🤝");
         wt.className = `text-2xl font-bold p-4 rounded-2xl border-4 flex-shrink-0 ${s1>s2?'bg-sky-50 border-sky-400 text-sky-800':'bg-pink-50 border-pink-400 text-pink-800'}`;
         
-        const p1List = document.getElementById('p1-list'), p2List = document.getElementById('p2-list'), passList = document.getElementById('pass-list');
         let p1Words = [], p2Words = [], unobtainedWords = [];
         for (let r = 0; r < 8; r++) {
-            for (let c = 0; c < 8; c++) { 
-                const val = board[r][c], word = currentWords[r * 8 + c]; 
-                if (!word || !word.text) continue; 
-                if (val === 1) p1Words.push(word); 
-                else if (val === 2) p2Words.push(word); 
-                else unobtainedWords.push(word); 
-            }
+          for (let c = 0; c < 8; c++) { 
+            const val = state.board[r][c], word = words[r * 8 + c]; 
+            if (!word || !word.text) continue; 
+            if (val === 1) p1Words.push(word); else if (val === 2) p2Words.push(word); else unobtainedWords.push(word); 
+          }
         }
-        let reviewSet = new Set([...unobtainedWords, ...passedHistory]);
-        
+        let reviewSet = new Set([...unobtainedWords, ...state.passedHistory]);
         const createHTML = (w) => `<div class="px-2 py-1.5 border-b border-gray-200/50 flex justify-between items-end gap-2 bg-white/50 rounded hover:bg-white transition-colors"><span class="text-xl font-bold">${w.kanji}</span><span class="text-xs text-gray-500 font-medium pb-0.5">${w.text}</span></div>`;
-        p1List.innerHTML = p1Words.map(createHTML).join(''); p2List.innerHTML = p2Words.map(createHTML).join(''); passList.innerHTML = Array.from(reviewSet).map(createHTML).join('');
+        document.getElementById('p1-list').innerHTML = p1Words.map(createHTML).join('');
+        document.getElementById('p2-list').innerHTML = p2Words.map(createHTML).join('');
+        document.getElementById('pass-list').innerHTML = reviewSet.size === 0 ? `<div class="p-4 text-center text-sm text-gray-400">パスされた漢字はありません。<br>すばらしい！</div>` : Array.from(reviewSet).map(createHTML).join('');
         
-        if (reviewSet.size === 0) passList.innerHTML = `<div class="p-4 text-center text-sm text-gray-400">パスされた漢字はありません。<br>すばらしい！</div>`;
-        document.getElementById('modal-clear').classList.remove('hidden'); setTimeout(() => document.getElementById('clear-content').classList.add('scale-100'), 50);
+        document.getElementById('modal-clear').classList.remove('hidden');
+        setTimeout(() => document.getElementById('clear-content').classList.add('scale-100'), 50);
       }
-    }
 
-    function showConfirmModal(action) { 
-        if (isAnimating) return; Sound.playError(); pendingAction = action; 
+      async showPassModal() {
+        const modal = document.getElementById('modal-pass'), content = document.getElementById('pass-content');
+        modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); });
+        await new Promise(res => setTimeout(res, 1500));
+        modal.classList.add('opacity-0'); content.classList.add('scale-90');
+        await new Promise(res => setTimeout(res, 300)); modal.classList.add('hidden');
+      }
+
+      showConfirmModal(action) {
         const modal = document.getElementById('modal-confirm'), content = document.getElementById('confirm-content'), msg = document.getElementById('confirm-message'); 
         msg.innerHTML = action === 'reset' ? "いままでの 記録が きえます。<br>ほんとうに 最初から やり直しますか？" : "いままでの 記録が きえます。<br>ほんとうに 問題を 変えますか？"; 
         modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); 
-    }
-    
-    function closeConfirmModal() { 
+      }
+      
+      closeConfirmModal() {
         const modal = document.getElementById('modal-confirm'), content = document.getElementById('confirm-content'); 
         modal.classList.add('opacity-0'); content.classList.add('scale-90'); 
-        setTimeout(() => { modal.classList.add('hidden'); pendingAction = null; }, 300); 
+        setTimeout(() => { modal.classList.add('hidden'); }, 300); 
+      }
+
+      showModal(modalId, contentId) {
+        const modal = document.getElementById(modalId), content = document.getElementById(contentId);
+        modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); });
+      }
+
+      closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300);
+      }
     }
-    
-    document.getElementById('btn-confirm-no').onclick = () => { Sound.playTap(); closeConfirmModal(); };
-    document.getElementById('btn-confirm-yes').onclick = () => { Sound.playPass(); closeConfirmModal(); if (pendingAction === 'reset') resetBoardData(false); else if (pendingAction === 'shuffle') resetBoardData(true); };
-    document.getElementById('btn-csv-help').onclick = () => { if (isAnimating) return; Sound.playTap(); const modal = document.getElementById('modal-csv-help'), content = document.getElementById('csv-help-content'); modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); };
-    document.getElementById('btn-close-csv-help').onclick = () => { Sound.playTap(); const modal = document.getElementById('modal-csv-help'); modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); };
-    document.getElementById('btn-help').onclick = () => { if (isAnimating) return; Sound.playTap(); const modal = document.getElementById('modal-help'), content = document.getElementById('help-content'); modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); };
-    document.getElementById('btn-close-help').onclick = () => { Sound.playTap(); const modal = document.getElementById('modal-help'); modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); };
-    document.getElementById('btn-close-clear').onclick = () => { Sound.playTap(); document.getElementById('modal-clear').classList.add('hidden'); };
 
-    function resetBoardData(gen = true) { 
-        if (isAnimating) return; 
-        if (gen) currentWords = generateWords(); 
-        board = Array(8).fill(0).map(() => Array(8).fill(0)); 
-        board[3][3] = 1; board[3][4] = 2; board[4][3] = 2; board[4][4] = 1; 
-        currentPlayer = 1; isGameOver = false; showingKanji = null; isGameStarted = false; 
-        passedHistory.clear(); historyStack = []; 
-        setSettingsLock(false); setUILock(false); initBoardDOM(); updateBoard(); updateUI(); updateUndoButton(); 
+    class GameController {
+      constructor() {
+        this.sound = new SoundManager();
+        this.data = new DataModel();
+        this.state = new BoardModel();
+        this.view = new GameView();
+        this.pendingAction = null;
+      }
+
+      init() {
+        this.view.bindEvents(this);
+        // 保存されたデータがあればUIを有効化
+        this.view.initSettingsUI(this.data.customWords.length >= 60);
+        this.resetGame(true);
+      }
+
+      resetGame(generateNewWords = true) {
+        if (this.view.isAnimating) return;
+        if (generateNewWords) this.data.generateWords();
+        this.state.reset();
+        this.view.setSettingsLock(false);
+        this.view.setUILock(false);
+        this.view.initBoardDOM(this.data.currentWords, (r, c) => this.handleCellClick(r, c));
+        this.view.updateBoardState(this.state);
+        this.view.updateUI(this.state);
+        this.view.updateUndoButton(false);
+      }
+
+      async handleCellClick(r, c) {
+        if (this.state.isGameOver || this.view.isAnimating) return;
+        this.sound.init();
+        const flips = this.state.getFlippable(r, c, this.state.currentPlayer);
+        
+        if (flips.length === 0 && (!this.state.showingKanji || this.state.showingKanji.r !== r || this.state.showingKanji.c !== c)) { 
+          this.sound.playError(); return; 
+        }
+        
+        if (this.state.showingKanji && this.state.showingKanji.r === r && this.state.showingKanji.c === c) {
+          // 置く処理
+          this.view.setUILock(true); 
+          this.state.saveState();
+          this.view.updateUndoButton(true);
+          
+          this.state.board[r][c] = this.state.currentPlayer; 
+          this.state.showingKanji = null; 
+          this.view.updateBoardState(this.state, false); 
+          this.sound.playPlace();
+          
+          if (!this.state.isGameStarted) { this.state.isGameStarted = true; this.view.setSettingsLock(true); }
+          await new Promise(res => setTimeout(res, 800));
+          
+          for (let pos of flips) { 
+            this.state.board[pos.r][pos.c] = this.state.currentPlayer; 
+            this.view.updateBoardState(this.state, false); 
+            this.sound.playFlip(); 
+            await new Promise(res => setTimeout(res, 500)); 
+          }
+          await new Promise(res => setTimeout(res, 800));
+          
+          const nextPlayer = this.state.currentPlayer === 1 ? 2 : 1;
+          if (this.state.hasValidMoves(nextPlayer)) {
+            this.state.currentPlayer = nextPlayer; 
+          } else if (this.state.hasValidMoves(this.state.currentPlayer)) {
+            this.sound.playPass();
+            await this.view.showPassModal(); 
+          } else { 
+            this.checkGameOver(true); this.view.setUILock(false); return; 
+          }
+          this.view.setUILock(false); this.view.updateUI(this.state); this.view.updateBoardState(this.state, true); this.checkGameOver(false);
+        } else { 
+          // めくる処理
+          this.state.showingKanji = { r, c }; 
+          this.sound.playTap(); 
+          this.view.updateBoardState(this.state, true); 
+        }
+      }
+
+      checkGameOver(force = false) {
+        const {s1, s2} = this.state.getScores();
+        if (force || s1+s2===64 || (!this.state.hasValidMoves(1) && !this.state.hasValidMoves(2))) {
+          this.state.isGameOver = true; 
+          this.sound.playWin();
+          this.view.showGameOverModal(this.state, this.data.currentWords);
+        }
+      }
+
+      // --- Event Handlers ---
+      handleImportClick() { if (this.state.isGameStarted) return; this.sound.init(); document.getElementById('file-upload').click(); }
+      
+      handleFileChange(e) {
+        const file = e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            this.data.parseCSV(event.target.result);
+            document.getElementById('opt-custom').disabled = false;
+            document.getElementById('select-grade').value = 'custom';
+            alert(`成功！ ${this.data.customWords.length}個の問題を読み込みました。`);
+            this.resetGame(true);
+          } catch(err) { alert(err.message); }
+        };
+        reader.readAsArrayBuffer(file);
+        e.target.value = '';
+      }
+
+      handleUndo() {
+        if (this.view.isAnimating || !this.state.restoreState()) return;
+        this.sound.playTap();
+        document.getElementById('modal-clear').classList.add('hidden');
+        if (!this.state.isGameStarted) this.view.setSettingsLock(false);
+        this.view.updateUI(this.state); 
+        this.view.updateBoardState(this.state, true); 
+        this.view.updateUndoButton(this.state.historyStack.length > 0);
+      }
+
+      handlePass() {
+        if(this.state.isGameOver || this.view.isAnimating) return; 
+        this.sound.playPass(); 
+        this.state.saveState();
+        this.view.updateUndoButton(true);
+        if (this.state.showingKanji) { 
+          const word = this.data.currentWords[this.state.showingKanji.r * 8 + this.state.showingKanji.c]; 
+          if (word && word.text) this.state.passedHistory.add(word); 
+        }
+        if (!this.state.isGameStarted) { this.state.isGameStarted = true; this.view.setSettingsLock(true); }
+        this.state.currentPlayer = this.state.currentPlayer === 1 ? 2 : 1; 
+        this.state.showingKanji = null; 
+        this.view.updateUI(this.state); 
+        this.view.updateBoardState(this.state); 
+        this.checkGameOver(false); 
+      }
+
+      showConfirm(action) {
+        if (this.view.isAnimating) return; 
+        this.sound.playError(); 
+        this.pendingAction = action;
+        this.view.showConfirmModal(action);
+      }
+
+      closeConfirm() { this.sound.playTap(); this.view.closeConfirmModal(); this.pendingAction = null; }
+
+      executeConfirm() {
+        this.sound.playPass(); this.view.closeConfirmModal();
+        if (this.pendingAction === 'reset') this.resetGame(false);
+        else if (this.pendingAction === 'shuffle') this.resetGame(true);
+        this.pendingAction = null;
+      }
+
+      handleRestart() { document.getElementById('modal-clear').classList.add('hidden'); this.resetGame(true); }
+      handleSettingsChange(type, value) {
+        if (type === 'length') this.data.currentLength = value;
+        else if (type === 'grade') this.data.currentGrade = value;
+        this.resetGame(true);
+      }
     }
-    
-    function initGame() { resetBoardData(true); }
 
-    document.getElementById('btn-undo').onclick = () => {
-      if (isAnimating || historyStack.length === 0) return; Sound.playTap(); const prevState = historyStack.pop();
-      board = prevState.board; currentPlayer = prevState.currentPlayer; passedHistory = new Set(prevState.passedHistory);
-      isGameOver = false; showingKanji = null; document.getElementById('modal-clear').classList.add('hidden');
-      if (historyStack.length === 0) { isGameStarted = false; setSettingsLock(false); }
-      updateUI(); updateBoard(true); updateUndoButton();
+    // ==========================================
+    // Bootstrap
+    // ==========================================
+    window.onload = () => {
+      const app = new GameController();
+      app.init();
     };
-
-    document.getElementById('btn-pass').onclick = () => { 
-      if(isGameOver || isAnimating) return; Sound.init(); Sound.playPass(); saveState();
-      if (showingKanji) { const idx = showingKanji.r * 8 + showingKanji.c, word = currentWords[idx]; if (word && word.text) passedHistory.add(word); }
-      if (!isGameStarted) { isGameStarted = true; setSettingsLock(true); }
-      currentPlayer = currentPlayer === 1 ? 2 : 1; showingKanji = null; updateUI(); updateBoard(); checkGameOver(false); 
-    };
-    
-    document.getElementById('btn-reset').onclick = () => showConfirmModal('reset');
-    document.getElementById('btn-shuffle').onclick = () => showConfirmModal('shuffle');
-    document.getElementById('btn-restart').onclick = () => { document.getElementById('modal-clear').classList.add('hidden'); resetBoardData(true); };
-    document.getElementById('select-length').onchange = (e) => { currentLength = e.target.value; resetBoardData(true); };
-    document.getElementById('select-grade').onchange = (e) => { currentGrade = e.target.value; resetBoardData(true); };
-    
-    window.onload = initGame;
   </script>
 </body>
 </html>
