@@ -536,10 +536,10 @@
         
         document.getElementById('btn-confirm-no').onclick = () => controller.closeConfirm();
         document.getElementById('btn-confirm-yes').onclick = () => controller.executeConfirm();
-        document.getElementById('btn-csv-help').onclick = () => controller.showModal('modal-csv-help', 'csv-help-content');
-        document.getElementById('btn-close-csv-help').onclick = () => controller.closeModal('modal-csv-help');
-        document.getElementById('btn-help').onclick = () => controller.showModal('modal-help', 'help-content');
-        document.getElementById('btn-close-help').onclick = () => controller.closeModal('modal-help');
+        document.getElementById('btn-csv-help').onclick = () => { controller.sound.playTap(); this.showModal('modal-csv-help', 'csv-help-content'); };
+        document.getElementById('btn-close-csv-help').onclick = () => { controller.sound.playTap(); this.closeModal('modal-csv-help'); };
+        document.getElementById('btn-help').onclick = () => { controller.sound.playTap(); this.showModal('modal-help', 'help-content'); };
+        document.getElementById('btn-close-help').onclick = () => { controller.sound.playTap(); this.closeModal('modal-help'); };
         document.getElementById('btn-close-clear').onclick = () => { controller.sound.playTap(); document.getElementById('modal-clear').classList.add('hidden'); };
       }
 
