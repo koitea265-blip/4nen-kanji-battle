@@ -14,170 +14,180 @@
     .font-maru { font-family: 'Zen Maru Gothic', 'UD デジタル 教科書体 NK-R', sans-serif; }
     .font-kyokasho { font-family: 'UD デジタル 教科書体 NK-R', 'Klee One', serif; }
     .stone-container { perspective: 1000px; }
-    .stone { transition: transform 1.0s cubic-bezier(0.4, 0.0, 0.2, 1); transform-style: preserve-3d; }
+    .stone { transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1); transform-style: preserve-3d; }
     .stone.flipped { transform: rotateY(180deg); }
     .stone-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
     .stone-back { transform: rotateY(180deg); }
     .cell-flip-container { perspective: 1000px; container-type: inline-size; height: 100%; width: 100%; }
-    .cell-flip-inner { transition: transform 1.0s cubic-bezier(0.4, 0.0, 0.2, 1); transform-style: preserve-3d; }
+    .cell-flip-inner { transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1); transform-style: preserve-3d; }
     .cell-flip-inner.is-flipped { transform: rotateY(180deg); }
     .cell-flip-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
     .cell-flip-back { transform: rotateY(180deg); }
-    @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
     .animate-bounce-subtle { animation: bounce-subtle 2s infinite ease-in-out; }
     @keyframes pulse-glow-p1 { 0%, 100% { background-color: #0c4a6e; box-shadow: inset 0 0 0 2px #0ea5e9; } 50% { background-color: #075985; box-shadow: inset 0 0 0 4px #38bdf8, inset 0 0 20px #38bdf8; } }
     @keyframes pulse-glow-p2 { 0%, 100% { background-color: #831843; box-shadow: inset 0 0 0 2px #db2777; } 50% { background-color: #9d174d; box-shadow: inset 0 0 0 4px #f472b6, inset 0 0 20px #f472b6; } }
     .active-player-card { background: white !important; box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.3) !important; transform: scale(1.08) translateY(-10px); z-index: 30; border: 4px solid white !important; }
-    select { appearance: none; -webkit-appearance: none; }
     * { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     .can-move-p1 { animation: pulse-glow-p1 1.5s infinite ease-in-out !important; cursor: pointer; }
     .can-move-p2 { animation: pulse-glow-p2 1.5s infinite ease-in-out !important; cursor: pointer; }
     .showing-highlight { box-shadow: 0 0 0 4px white, 0 0 15px rgba(255, 255, 255, 0.9) !important; z-index: 40; }
     .place-marker { width: 100%; height: 100%; border-radius: 50%; }
     .ui-locked { pointer-events: none; opacity: 0.6; filter: grayscale(0.5); }
+    
+    /* Toggle Button Styles */
+    .toggle-btn { transition: all 0.1s; border-bottom-width: 4px; border-radius: 0.75rem; font-weight: 900; }
+    .toggle-btn.active { background-color: #f97316; color: white; border-bottom-width: 0px; transform: translateY(4px); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+    .toggle-btn:not(.active) { background-color: #ffffff; color: #9a3412; border-color: #fdba74; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .toggle-btn:not(.active):hover:not(:disabled) { background-color: #fff7ed; }
+    .toggle-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 </head>
 <body class="bg-slate-200 transition-colors duration-500 h-screen w-screen flex flex-col md:flex-row overflow-hidden text-gray-800 font-maru">
 
-  <aside id="control-panel" class="w-full md:w-80 h-auto md:h-full p-4 flex flex-col gap-2 bg-gradient-to-b from-amber-50 to-orange-100 shadow-[10px_0_20px_rgba(0,0,0,0.1)] z-20 border-r-4 border-orange-300 relative text-gray-800 transition-opacity duration-300">
+  <aside id="control-panel" class="w-full md:w-[340px] h-auto md:h-full p-3 md:p-4 flex flex-col gap-3 bg-gradient-to-b from-amber-50 to-orange-100 shadow-[5px_0_15px_rgba(0,0,0,0.1)] z-20 overflow-y-auto relative transition-opacity duration-300 border-r-4 border-orange-300">
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fb923c 2px, transparent 2px); background-size: 20px 20px;"></div>
     
-    <div class="relative z-10">
-      <h1 class="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] leading-tight text-center md:text-left flex items-center justify-center md:justify-start gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M11.646 3.097c.216-.453.864-.453 1.08 0l1.411 2.96 3.197.464c.485.07.68.67.329 1.01l-2.314 2.253.546 3.185c.083.483-.424.85-.857.625L12 11.96l-2.86 1.505c-.433.227-.94-.142-.857-.625l.546-3.185-2.314-2.253c-.351-.34-.156-.94.33-1.01l3.196-.464 1.412-2.96z"/></svg>
-        <span class="flex flex-col whitespace-nowrap text-left"><span>４年漢字バトル！</span><span>めくってオセロ</span></span>
+    <div class="flex items-center justify-between md:justify-start gap-2 shrink-0 relative z-10">
+      <h1 class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500 drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] leading-tight flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500 shrink-0 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M11.646 3.097c.216-.453.864-.453 1.08 0l1.411 2.96 3.197.464c.485.07.68.67.329 1.01l-2.314 2.253.546 3.185c.083.483-.424.85-.857.625L12 11.96l-2.86 1.505c-.433.227-.94-.142-.857-.625l.546-3.185-2.314-2.253c-.351-.34-.156-.94.33-1.01l3.196-.464 1.412-2.96z"/></svg>
+        <span class="flex flex-col whitespace-nowrap"><span>４年漢字バトル！</span><span>めくってオセロ</span></span>
       </h1>
-      <button id="btn-help" class="bg-white text-orange-600 border-2 border-orange-400 font-black py-1 px-6 rounded-full text-sm shadow-[0_4px_0_#fb923c] active:translate-y-1 transition-all mx-auto md:ml-0 mt-1 block">あそびかた</button>
+      <button id="btn-help" class="bg-white text-orange-600 border-2 border-orange-400 font-black py-1.5 px-3 rounded-full text-xs shadow-[0_3px_0_#fb923c] active:translate-y-1 active:shadow-none transition-all shrink-0">あそびかた</button>
     </div>
 
-    <div id="settings-panel" class="flex flex-col gap-2 mt-1 bg-gradient-to-br from-yellow-400 to-orange-500 p-3 md:p-4 rounded-[1.5rem] border-4 border-white shadow-[0_6px_0_#ea580c] relative z-10 overflow-hidden transition-all duration-300">
-      <div class="absolute top-[-10px] right-[-10px] w-16 h-16 bg-white opacity-20 rounded-full blur-xl pointer-events-none"></div>
-      <div class="text-base font-black text-white drop-shadow-md tracking-wider flex justify-between items-center">
-        <span>もんだいの設定</span>
-        <svg id="lock-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white opacity-0 transition-opacity duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
+    <div class="flex flex-col gap-2 shrink-0 bg-white/80 p-3 rounded-3xl border-4 border-white shadow-sm relative z-10">
+      <div id="turn-indicator" class="text-lg font-black py-2 rounded-full text-center shadow-md border-4 transition-all duration-300 animate-bounce-subtle tracking-wider">準備中</div>
+      
+      <div class="flex justify-around items-center h-24 md:h-28 relative mt-1">
+        <div id="p1-box" class="flex flex-col items-center p-2 rounded-2xl border-4 border-transparent transition-all duration-500 w-[45%]">
+          <div class="w-10 h-10 mb-1 rounded-full bg-sky-300 border-2 border-sky-400 shadow flex items-center justify-center text-sky-900 font-black text-lg">水</div>
+          <span id="score-1" class="text-3xl md:text-4xl font-black text-slate-800 leading-none">0</span>
+        </div>
+        <div class="text-lg font-black text-orange-300 uppercase">VS</div>
+        <div id="p2-box" class="flex flex-col items-center p-2 rounded-2xl border-4 border-transparent transition-all duration-500 w-[45%]">
+          <div class="w-10 h-10 mb-1 rounded-full bg-pink-400 border-2 border-pink-500 shadow flex items-center justify-center text-pink-900 font-black text-lg">ピ</div>
+          <span id="score-2" class="text-3xl md:text-4xl font-black text-slate-800 leading-none">0</span>
+        </div>
       </div>
+
+      <div class="grid grid-cols-2 gap-2 mt-2">
+        <button id="btn-undo" disabled class="bg-gradient-to-b from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white border-b-4 border-blue-700 py-2.5 rounded-xl font-black shadow-sm active:translate-y-1 active:border-b-0 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed">1手戻す</button>
+        <button id="btn-pass" class="bg-gradient-to-b from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 text-white border-b-4 border-slate-800 py-2.5 rounded-xl font-black shadow-sm active:translate-y-1 active:border-b-0 transition-all text-sm">パスする</button>
+      </div>
+    </div>
+
+    <div id="settings-panel" class="flex flex-col gap-2 mt-auto bg-white/90 p-3 md:p-4 rounded-2xl border border-orange-200 shadow-sm relative z-10 transition-all duration-300 backdrop-blur-sm">
+      <div class="flex justify-between items-center mb-1 relative z-10">
+        <span class="text-sm font-bold text-slate-600 tracking-wide">もんだいの設定</span>
+        <svg id="lock-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 opacity-0 transition-opacity duration-300" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
+      </div>
+      
       <div class="flex flex-col gap-2 relative z-10">
-        <select id="select-length" class="w-full bg-white text-orange-900 border-b-4 border-orange-200 py-2.5 px-4 rounded-xl text-lg font-black focus:outline-none cursor-pointer disabled:opacity-70 disabled:bg-gray-200 disabled:text-gray-500 disabled:border-gray-300 disabled:cursor-not-allowed transition-all leading-tight">
-          <option value="2">熟語 2文字</option><option value="1">漢字 1文字</option>
-        </select>
-        <select id="select-grade" class="w-full bg-white text-orange-900 border-b-4 border-orange-200 py-2.5 px-4 rounded-xl text-lg font-black focus:outline-none cursor-pointer disabled:opacity-70 disabled:bg-gray-200 disabled:text-gray-500 disabled:border-gray-300 disabled:cursor-not-allowed transition-all leading-tight">
-          <option value="only4">4年生の漢字</option><option value="upTo3">1〜3年生の漢字</option><option value="custom" id="opt-custom" disabled>先生のオリジナル問題</option>
-        </select>
+        <div class="flex gap-2">
+          <button class="toggle-btn flex-1 py-2 text-sm active" data-group="length" data-value="2">熟語 2文字</button>
+          <button class="toggle-btn flex-1 py-2 text-sm" data-group="length" data-value="1">漢字 1文字</button>
+        </div>
+        <div class="flex gap-2">
+          <button class="toggle-btn flex-1 py-2 text-[11px] md:text-xs active" data-group="grade" data-value="only4">4年生</button>
+          <button class="toggle-btn flex-1 py-2 text-[11px] md:text-xs" data-group="grade" data-value="upTo3">1〜3年生</button>
+          <button class="toggle-btn flex-1 py-2 text-[11px] md:text-xs" data-group="grade" data-value="custom" id="opt-custom" disabled>オリジナル</button>
+        </div>
       </div>
-      <button id="btn-import-csv" class="relative z-10 w-full mt-1 bg-white text-orange-600 border-2 border-orange-300 font-black py-1.5 rounded-lg text-xs shadow-sm hover:bg-orange-50 transition-colors flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
+
+      <div class="grid grid-cols-2 gap-2 mt-1 relative z-10">
+        <button id="btn-shuffle" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 py-1.5 rounded-lg font-bold shadow-sm active:translate-y-0.5 transition-all text-xs">問題を変更</button>
+        <button id="btn-reset" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 py-1.5 rounded-lg font-bold shadow-sm active:translate-y-0.5 transition-all text-xs">最初から</button>
+      </div>
+
+      <button id="btn-import-csv" class="relative z-10 w-full mt-1 bg-orange-50 text-orange-700 border border-orange-200 font-bold py-1.5 rounded-lg text-xs shadow-sm hover:bg-orange-100 active:translate-y-0.5 transition-all flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
         問題データを読み込む
       </button>
-      <div class="relative z-10 text-right"><button id="btn-csv-help" class="text-[10px] text-white font-bold underline hover:text-orange-200 transition-colors">※オリジナル問題の作り方</button></div>
+      <div class="relative z-10 text-right mt-1"><button id="btn-csv-help" class="text-[10px] text-slate-500 font-bold underline hover:text-slate-700 transition-colors">オリジナル問題の作り方</button></div>
       <input type="file" id="file-upload" accept=".csv" class="hidden">
-    </div>
-
-    <div class="flex flex-col gap-2 mt-1 bg-white/60 p-3 rounded-3xl border-2 border-white shadow-inner relative z-10">
-      <div id="turn-indicator" class="text-xl font-black py-2 rounded-full text-center shadow-lg border-4 transition-all duration-300 animate-bounce-subtle">準備中</div>
-      <div class="flex justify-around items-center h-24 md:h-28 relative">
-        <div id="p1-box" class="flex flex-col items-center p-1 rounded-2xl border-4 border-transparent transition-all duration-500 w-[45%]">
-          <div class="w-10 h-10 md:w-12 md:h-12 mb-1 rounded-full bg-sky-300 border-2 border-sky-400 shadow-md flex items-center justify-center text-sky-900 font-black text-lg">水</div>
-          <span id="score-1" class="text-3xl md:text-4xl font-black text-gray-800 leading-none">0</span>
-        </div>
-        <div class="text-lg font-black text-orange-300 uppercase tracking-tighter">VS</div>
-        <div id="p2-box" class="flex flex-col items-center p-1 rounded-2xl border-4 border-transparent transition-all duration-500 w-[45%]">
-          <div class="w-10 h-10 md:w-12 md:h-12 mb-1 rounded-full bg-pink-400 border-2 border-pink-500 shadow-md flex items-center justify-center text-pink-900 font-black text-lg">ピ</div>
-          <span id="score-2" class="text-3xl md:text-4xl font-black text-gray-800 leading-none">0</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 md:grid-cols-1 gap-2 mt-auto text-white relative z-10">
-      <div class="grid grid-cols-2 gap-2 col-span-2 md:col-span-1">
-        <button id="btn-undo" disabled class="bg-gradient-to-b from-blue-400 to-blue-500 border-b-4 border-blue-600 py-2.5 rounded-xl font-black shadow-md active:translate-y-1 active:border-0 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed">1手戻す</button>
-        <button id="btn-pass" class="bg-gradient-to-b from-gray-400 to-gray-500 border-b-4 border-gray-600 py-2.5 rounded-xl font-black shadow-md active:translate-y-1 active:border-0 transition-all text-sm">パスする</button>
-      </div>
-      <div class="grid grid-cols-2 gap-2 col-span-2 md:col-span-1">
-        <button id="btn-shuffle" class="bg-gradient-to-b from-emerald-400 to-emerald-500 border-b-4 border-emerald-600 py-2 rounded-xl font-black shadow-md active:translate-y-1 active:border-0 transition-all text-xs">問題変更</button>
-        <button id="btn-reset" class="bg-gradient-to-b from-red-400 to-red-500 border-b-4 border-red-600 py-2 rounded-xl font-black shadow-md active:translate-y-1 active:border-0 transition-all text-xs">リセット</button>
-      </div>
     </div>
   </aside>
 
   <main class="flex-1 flex flex-col items-center justify-center p-2 md:p-8 relative shadow-inner">
     <div id="board-overlay" class="absolute inset-0 z-50 hidden"></div>
-    <div class="w-full max-w-[calc(100vh-6rem)] aspect-square bg-gradient-to-br from-amber-700 via-yellow-900 to-amber-950 p-2 md:p-4 rounded-2xl shadow-[0_30px_60px_-12px_rgba(0,0,0,0.6)] border-4 border-amber-950 relative overflow-hidden">
+    <div class="w-full max-w-[calc(100vh-4rem)] md:max-w-[calc(100vh-6rem)] aspect-square bg-gradient-to-br from-amber-700 via-yellow-900 to-amber-950 p-2 md:p-4 rounded-2xl shadow-[0_30px_60px_-12px_rgba(0,0,0,0.6)] border-4 border-amber-950 relative overflow-hidden">
       <div class="absolute inset-2 md:inset-4 rounded-sm shadow-[inset_0_5px_15px_rgba(0,0,0,0.8)] pointer-events-none z-10 border border-black/10"></div>
-      <div id="board" class="flex-1 w-full h-full bg-emerald-900 grid grid-cols-8 grid-rows-8 gap-[1px] md:gap-[2px] relative z-0 p-[1px]"></div>
+      <div id="board" class="flex-1 w-full h-full bg-emerald-800 grid grid-cols-8 grid-rows-8 gap-[1px] md:gap-[2px] relative z-0 p-[1px]"></div>
     </div>
-    <div class="mt-4 text-[10px] md:text-sm text-gray-500 font-bold tracking-widest text-center tracking-tighter">&copy;2026 4年漢字バトル！めくってオセロ ICT支援の杜</div>
+    <div class="mt-3 text-[10px] md:text-xs text-slate-500 font-bold tracking-widest text-center">&copy;2026 4年漢字バトル！めくってオセロ ICT支援の杜</div>
   </main>
 
   <!-- Modals -->
-  <div id="modal-clear" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[100] backdrop-blur-md p-4">
+  <div id="modal-clear" class="fixed inset-0 bg-slate-900/80 hidden flex items-center justify-center z-[100] backdrop-blur-sm p-4">
     <div class="bg-white w-full max-w-4xl rounded-[2rem] shadow-2xl border-8 border-yellow-400 text-center p-6 transform scale-0 transition-transform duration-500 flex flex-col max-h-[90vh]" id="clear-content">
-      <h2 class="text-3xl md:text-4xl font-black mb-2 flex-shrink-0">しゅうりょう！</h2>
-      <div id="winner-text" class="text-xl md:text-2xl font-bold mb-4 p-4 rounded-2xl border-4 flex-shrink-0"></div>
+      <h2 class="text-3xl md:text-4xl font-black mb-2 text-slate-800 shrink-0">しゅうりょう！</h2>
+      <div id="winner-text" class="text-xl md:text-2xl font-bold mb-4 p-3 rounded-2xl border-4 shrink-0"></div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6 overflow-y-auto flex-1 min-h-0 text-left">
-        <div class="bg-sky-50 rounded-xl overflow-hidden border-2 border-sky-200 flex flex-col"><h3 class="font-bold text-sky-800 text-center bg-sky-200 py-1.5 text-sm">水色が獲得</h3><div id="p1-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-sky-50 font-sans"></div></div>
-        <div class="bg-pink-50 rounded-xl overflow-hidden border-2 border-pink-200 flex flex-col"><h3 class="font-bold text-pink-800 text-center bg-pink-200 py-1.5 text-sm">ピンクが獲得</h3><div id="p2-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-pink-50 font-sans"></div></div>
-        <div class="bg-gray-100 rounded-xl overflow-hidden border-2 border-red-300 flex flex-col shadow-[0_0_15px_rgba(239,68,68,0.2)]"><h3 class="font-bold text-red-700 text-center bg-red-100 py-1.5 text-sm flex flex-col leading-tight"><span>復習リスト</span><span class="text-[10px] font-normal text-red-600">（パス・未獲得）</span></h3><div id="pass-list" class="p-2 space-y-1 overflow-y-auto flex-1 bg-gray-50 font-sans"></div></div>
+        <div class="bg-sky-50 rounded-xl overflow-hidden border-2 border-sky-200 flex flex-col"><h3 class="font-bold text-sky-800 text-center bg-sky-200 py-1.5 text-sm">水色が獲得</h3><div id="p1-list" class="p-2 space-y-1 overflow-y-auto flex-1 font-sans"></div></div>
+        <div class="bg-pink-50 rounded-xl overflow-hidden border-2 border-pink-200 flex flex-col"><h3 class="font-bold text-pink-800 text-center bg-pink-200 py-1.5 text-sm">ピンクが獲得</h3><div id="p2-list" class="p-2 space-y-1 overflow-y-auto flex-1 font-sans"></div></div>
+        <div class="bg-slate-50 rounded-xl overflow-hidden border-2 border-slate-300 flex flex-col shadow-[0_0_15px_rgba(0,0,0,0.1)]"><h3 class="font-bold text-slate-700 text-center bg-slate-200 py-1.5 text-sm flex flex-col leading-tight"><span>復習リスト</span><span class="text-[10px] font-normal text-slate-500">（パス・未獲得）</span></h3><div id="pass-list" class="p-2 space-y-1 overflow-y-auto flex-1 font-sans"></div></div>
       </div>
-      <div class="flex gap-2 flex-shrink-0">
-        <button id="btn-restart" class="flex-1 bg-emerald-500 text-white font-bold py-4 rounded-xl text-xl shadow-lg active:scale-95 transition-all">もう一度遊ぶ</button>
-        <button id="btn-close-clear" class="w-1/3 bg-gray-400 text-white font-bold py-4 rounded-xl text-xl shadow-lg active:scale-95 transition-all">とじる</button>
+      <div class="flex gap-2 shrink-0">
+        <button id="btn-restart" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-xl text-xl shadow-lg active:scale-95 transition-all border-b-4 border-emerald-700 active:border-b-0">もう一度遊ぶ</button>
+        <button id="btn-close-clear" class="w-1/3 bg-slate-400 hover:bg-slate-500 text-white font-black py-4 rounded-xl text-xl shadow-lg active:scale-95 transition-all border-b-4 border-slate-600 active:border-b-0">とじる</button>
       </div>
     </div>
   </div>
   
-  <div id="modal-pass" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[90] backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none">
+  <div id="modal-pass" class="fixed inset-0 bg-slate-900/50 hidden flex items-center justify-center z-[90] backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none">
     <div class="bg-white px-8 py-6 rounded-3xl shadow-2xl border-4 border-orange-400 text-center transform scale-90 transition-transform duration-300" id="pass-content">
-      <div class="text-3xl font-black text-orange-600 mb-2">パス！</div><div class="text-lg font-bold text-gray-600">おける場所がありません</div>
+      <div class="text-3xl font-black text-orange-600 mb-2">パス！</div><div class="text-lg font-bold text-slate-600">おける場所がありません</div>
     </div>
   </div>
 
-  <div id="modal-confirm" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[100] backdrop-blur-sm transition-opacity duration-300 opacity-0">
-    <div class="bg-white px-6 py-8 rounded-3xl shadow-2xl border-4 border-red-500 text-center transform scale-90 transition-transform duration-300 w-11/12 max-w-sm" id="confirm-content">
-      <div class="text-2xl font-black text-red-600 mb-4 flex items-center justify-center gap-2">
+  <div id="modal-confirm" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[100] backdrop-blur-sm transition-opacity duration-300 opacity-0">
+    <div class="bg-white px-6 py-8 rounded-3xl shadow-2xl border-4 border-rose-500 text-center transform scale-90 transition-transform duration-300 w-11/12 max-w-sm" id="confirm-content">
+      <div class="text-2xl font-black text-rose-600 mb-4 flex items-center justify-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>ちゅうい！
       </div>
-      <div id="confirm-message" class="text-lg font-bold text-gray-700 mb-6 leading-relaxed text-left"></div>
+      <div id="confirm-message" class="text-lg font-bold text-slate-700 mb-6 leading-relaxed text-left"></div>
       <div class="flex gap-3">
-        <button id="btn-confirm-no" class="flex-1 bg-gray-400 text-white font-bold py-3 rounded-xl text-lg shadow-md active:scale-95 transition-all">やめる</button>
-        <button id="btn-confirm-yes" class="flex-1 bg-red-500 text-white font-bold py-3 rounded-xl text-lg shadow-md active:scale-95 transition-all">はい</button>
+        <button id="btn-confirm-no" class="flex-1 bg-slate-300 hover:bg-slate-400 text-slate-700 font-black py-3 rounded-xl text-lg shadow-sm active:scale-95 transition-all">やめる</button>
+        <button id="btn-confirm-yes" class="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-black py-3 rounded-xl text-lg shadow-sm active:scale-95 transition-all">はい</button>
       </div>
     </div>
   </div>
 
-  <div id="modal-help" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[110] backdrop-blur-sm transition-opacity duration-300 opacity-0 p-4">
+  <div id="modal-help" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[110] backdrop-blur-sm transition-opacity duration-300 opacity-0 p-4">
     <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-sky-400 transform scale-90 transition-transform duration-300 w-full max-w-lg flex flex-col" id="help-content">
-      <div class="text-xl md:text-2xl font-black text-sky-600 mb-4 flex items-center gap-2 border-b-2 border-sky-200 pb-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>あそびかた</div>
-      <div class="text-sm md:text-base font-bold text-gray-700 mb-6 leading-relaxed text-left space-y-3">
-        <p class="flex gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">1</span> 置きたいマスをタップして、漢字をめくります。</p>
-        <p class="flex gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">2</span> もう一度タップすると、石を置きます。</p>
-        <p class="flex gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">3</span> わからない時は「パスする」ボタンを押します。</p>
-        <p class="flex gap-2"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">4</span> まちがえて置いた時は「1手戻す」でやり直せます。</p>
+      <div class="text-xl md:text-2xl font-black text-sky-600 mb-4 flex items-center gap-2 border-b-2 border-sky-100 pb-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>あそびかた</div>
+      <div class="text-sm md:text-base font-bold text-slate-700 mb-6 leading-relaxed text-left space-y-3">
+        <p class="flex gap-2 items-start"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">1</span> <span>置きたいマスをタップして、漢字をめくります。</span></p>
+        <p class="flex gap-2 items-start"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">2</span> <span>もう一度タップすると、石を置きます。</span></p>
+        <p class="flex gap-2 items-start"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">3</span> <span>わからない時は「パスする」ボタンを押します。</span></p>
+        <p class="flex gap-2 items-start"><span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md shrink-0">4</span> <span>まちがえて置いた時は「1手戻す」でやり直せます。</span></p>
       </div>
-      <button id="btn-close-help" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl text-lg shadow-md active:scale-95 transition-all">わかった！</button>
+      <button id="btn-close-help" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-black py-3 rounded-xl text-lg shadow-md active:scale-95 transition-all">わかった！</button>
     </div>
   </div>
 
-  <div id="modal-csv-help" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[110] backdrop-blur-sm transition-opacity duration-300 opacity-0 p-4">
+  <div id="modal-csv-help" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[110] backdrop-blur-sm transition-opacity duration-300 opacity-0 p-4">
     <div class="bg-white p-6 md:p-8 rounded-3xl shadow-2xl border-4 border-orange-400 transform scale-90 transition-transform duration-300 w-full max-w-lg max-h-[90vh] flex flex-col" id="csv-help-content">
-      <div class="text-xl md:text-2xl font-black text-orange-600 mb-4 flex items-center gap-2 border-b-2 border-orange-200 pb-2 flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>オリジナル問題の作り方</div>
-      <div class="text-sm md:text-base font-medium text-gray-700 mb-4 leading-relaxed overflow-y-auto flex-1 text-left space-y-4">
+      <div class="text-xl md:text-2xl font-black text-orange-600 mb-4 flex items-center gap-2 border-b-2 border-orange-100 pb-2 shrink-0"><svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>オリジナル問題の作り方</div>
+      <div class="text-sm md:text-base font-medium text-slate-700 mb-4 leading-relaxed overflow-y-auto flex-1 text-left space-y-4">
         <p>Excelなどの表計算ソフトを使って、以下のルールでデータを作成し、<strong class="text-red-500">CSV形式（カンマ区切り）</strong>で保存してください。</p>
-        <div class="bg-gray-100 p-3 rounded-xl border border-gray-300 font-maru">
-          <h3 class="font-bold text-gray-800 mb-2 border-b border-gray-300 pb-1">■ データの並び順（左から）</h3>
-          <ol class="list-decimal list-inside space-y-1 pl-1"><li><strong>A列：</strong> ひらがな</li><li><strong>B列：</strong> 漢字（裏面の答え）</li><li><strong>C列：</strong> ヒント</li></ol>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 font-maru">
+          <h3 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">■ データの並び順（左から）</h3>
+          <ol class="list-decimal list-inside space-y-1 pl-1 text-slate-700"><li><strong>A列：</strong> ひらがな（表面）</li><li><strong>B列：</strong> 漢字（裏面の答え）</li><li><strong>C列：</strong> ヒント（任意）</li></ol>
         </div>
         <div class="bg-orange-50 p-3 rounded-xl border border-orange-200 font-maru">
           <h3 class="font-bold text-orange-800 mb-2 border-b border-orange-200 pb-1">■ 注意事項</h3>
-          <ul class="list-disc list-inside space-y-1 pl-1 text-orange-900 text-xs"><li>データは<strong>最低60個</strong>必要です。</li><li>末尾約20個は「難しい問題」として四隅に配置されます。</li></ul>
+          <ul class="list-disc list-inside space-y-1 pl-1 text-orange-900"><li>データは<strong>最低60個</strong>必要です。</li><li>シャッフルされて盤面に配置されます。</li></ul>
         </div>
       </div>
-      <button id="btn-close-csv-help" class="w-full bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-xl text-lg shadow-md active:scale-95 transition-all flex-shrink-0">とじる</button>
+      <button id="btn-close-csv-help" class="w-full bg-slate-400 hover:bg-slate-500 text-white font-black py-3 rounded-xl text-lg shadow-md active:scale-95 transition-all shrink-0">とじる</button>
     </div>
   </div>
 
   <script>
     // ==========================================
-    // Core Utilities & Data (Hardcoded DB)
+    // Core Utilities & Data (クレンジング済み)
     // ==========================================
     function shuffleArray(array) {
       const arr = [...array];
@@ -189,13 +199,156 @@
     }
 
     const DB_UPTO3 = {
-      len1: [{text:"みず",kanji:"水",hint:"のむもの"},{text:"やま",kanji:"山",hint:"たかい"},{text:"かわ",kanji:"川",hint:"ながれる"},{text:"き",kanji:"木",hint:"もりにある"},{text:"ひ",kanji:"日",hint:"たいよう"},{text:"つき",kanji:"月",hint:"よる"},{text:"ひ",kanji:"火",hint:"あつい"},{text:"つち",kanji:"土",hint:"じめん"},{text:"きん",kanji:"金",hint:"おかね"},{text:"ほん",kanji:"本",hint:"よむもの"},{text:"て",kanji:"手",hint:"つかむ"},{text:"あし",kanji:"足",hint:"あるく"},{text:"め",kanji:"目",hint:"みる"},{text:"みみ",kanji:"耳",hint:"きく"},{text:"くち",kanji:"口",hint:"たべる"},{text:"はな",kanji:"鼻",hint:"におい"},{text:"ひと",kanji:"人",hint:"にんげん"},{text:"こ",kanji:"子",hint:"こども"},{text:"おんな",kanji:"女",hint:"じょせい"},{text:"おとこ",kanji:"男",hint:"だんせい"},{text:"そら",kanji:"空",hint:"あおい"},{text:"うみ",kanji:"海",hint:"みず"},{text:"かぜ",kanji:"風",hint:"ふく"},{text:"おと",kanji:"音",hint:"きこえる"},{text:"あめ",kanji:"雨",hint:"ふる"},{text:"ゆき",kanji:"雪",hint:"しろい"},{text:"はる",kanji:"春",hint:"あたたかい"},{text:"なつ",kanji:"夏",hint:"あつい"},{text:"あき",kanji:"秋",hint:"すずしい"},{text:"ふゆ",kanji:"冬",hint:"さむい"},{text:"うえ",kanji:"上",hint:"たかい"},{text:"した",kanji:"下",hint:"ひくい"},{text:"ひだり",kanji:"左",hint:"て"},{text:"みぎ",kanji:"右",hint:"て"},{text:"まる",kanji:"円",hint:"かたち"},{text:"いし",kanji:"石",hint:"かたい"},{text:"た",kanji:"田",hint:"おこめ"},{text:"もり",kanji:"森",hint:"き"},{text:"むら",kanji:"村",hint:"まち"},{text:"なまえ",kanji:"名",hint:"よばれる"},{text:"あさ",kanji:"朝",hint:"おきる"},{text:"よる",kanji:"夜",hint:"ねる"},{text:"いけ",kanji:"池",hint:"みず"},{text:"はな",kanji:"花",hint:"さく"},{text:"くさ",kanji:"草",hint:"みどり"},{text:"うし",kanji:"牛",hint:"もーもー"},{text:"うま",kanji:"馬",hint:"ひひーん"},{text:"いぬ",kanji:"犬",hint:"わんわん"},{text:"むし",kanji:"虫",hint:"ちいさい"},{text:"かい",kanji:"貝",hint:"うみ"},{text:"たけ",kanji:"竹",hint:"のびる"},{text:"じ",kanji:"字",hint:"もじ"},{text:"え",kanji:"絵",hint:"かく"},{text:"こころ",kanji:"心",hint:"おもう"},{text:"ちから",kanji:"力",hint:"パワー"},{text:"もん",kanji:"門",hint:"いりぐち"},{text:"いろ",kanji:"色",hint:"あかあお"},{text:"まち",kanji:"町",hint:"すむところ"},{text:"いと",kanji:"糸",hint:"ぬう"},{text:"こえ",kanji:"声",hint:"だす"},{text:"くるま",kanji:"車",hint:"のりもの"},{text:"まなぶ",kanji:"学",hint:"べんきょう"},{text:"がっこう",kanji:"校",hint:"いくところ"},{text:"さき",kanji:"先",hint:"まえ"},{text:"いきる",kanji:"生",hint:"いのち"},{text:"とし",kanji:"年",hint:"カレンダー"},{text:"くみ",kanji:"組",hint:"クラス"},{text:"ひゃく",kanji:"百",hint:"かず"},{text:"せん",kanji:"千",hint:"かず"},{text:"まん",kanji:"万",hint:"かず"},{text:"たま",kanji:"玉",hint:"まるい"},{text:"おう",kanji:"王",hint:"えらい"},{text:"あか",kanji:"赤",hint:"いろ"},{text:"あお",kanji:"青",hint:"いろ"},{text:"しろ",kanji:"白",hint:"いろ"},{text:"くろ",kanji:"黒",hint:"いろ"},{text:"みる",kanji:"見",hint:"め"},{text:"たつ",kanji:"立",hint:"あし"},{text:"やすむ",kanji:"休",hint:"ねる"},{text:"はいる",kanji:"入",hint:"なかへ"},{text:"でる",kanji:"出",hint:"そとへ"},{text:"はやし",kanji:"林",hint:"き"},{text:"ゆう",kanji:"夕",hint:"よるのまえ"},{text:"てん",kanji:"天",hint:"そら"},{text:"き",kanji:"気",hint:"きもち"},{text:"はれ",kanji:"晴",hint:"いいてんき"},{text:"まる",kanji:"丸",hint:"かたち"},{text:"つの",kanji:"角",hint:"かたち"},{text:"ゆみ",kanji:"弓",hint:"ぶき"},{text:"や",kanji:"矢",hint:"とり"},{text:"かたな",kanji:"刀",hint:"きる"},{text:"むぎ",kanji:"麦",hint:"たべる"},{text:"こめ",kanji:"米",hint:"たべる"},{text:"まめ",kanji:"豆",hint:"たべる"},{text:"にく",kanji:"肉",hint:"たべる"},{text:"さかな",kanji:"魚",hint:"およぐ"},{text:"とり",kanji:"鳥",hint:"とぶ"},{text:"はね",kanji:"羽",hint:"とり"},{text:"け",kanji:"毛",hint:"ふさふさ"},{text:"ひつじ",kanji:"羊",hint:"メー"},{text:"ほし",kanji:"星",hint:"そら"},{text:"くも",kanji:"雲",hint:"そら"},{text:"たに",kanji:"谷",hint:"やまのあいだ"},{text:"いわ",kanji:"岩",hint:"いし"},{text:"は原",kanji:"原",hint:"ひろい"},{text:"の",kanji:"野",hint:"はらっぱ"},{text:"うた",kanji:"歌",hint:"うたう"},{text:"こたえ",kanji:"答",hint:"へんじ"},{text:"いう",kanji:"言",hint:"はなす"},{text:"はなし",kanji:"話",hint:"しゃべる"},{text:"かたる",kanji:"語",hint:"ことば"},{text:"よむ",kanji:"読",hint:"ほん"},{text:"かく",kanji:"書",hint:"もじ"},{text:"しるす",kanji:"記",hint:"メモ"},{text:"かみ",kanji:"紙",hint:"かく"},{text:"つくえ",kanji:"机",hint:"べんきょう"},{text:"かお",kanji:"顔",hint:"あたま"},{text:"ふね",kanji:"船",hint:"うみ"},{text:"みち",kanji:"道",hint:"あるく"},{text:"てん",kanji:"点",hint:"マーク"},{text:"はしる",kanji:"走",hint:"あし"},{text:"ひかり",kanji:"光",hint:"まぶしい"}],
-      len2: [{text:"さんすう",kanji:"算数",hint:"かず"},{text:"こくご",kanji:"国語",hint:"ことば"},{text:"りか",kanji:"理科",hint:"じっけん"},{text:"しゃかい",kanji:"社会",hint:"ちず"},{text:"たいいく",kanji:"体育",hint:"うんどう"},{text:"おんがく",kanji:"音楽",hint:"うた"},{text:"りょうしん",kanji:"両親",hint:"ちちはは"},{text:"ともだち",kanji:"友達",hint:"なかよし"},{text:"がっこう",kanji:"学校",hint:"まなぶ"},{text:"せんせい",kanji:"先生",hint:"おしえる"},{text:"にっき",kanji:"日記",hint:"きろく"},{text:"えんそく",kanji:"遠足",hint:"あるく"},{text:"てんき",kanji:"天気",hint:"はれあめ"},{text:"げんき",kanji:"元気",hint:"パワー"},{text:"あさひ",kanji:"朝日",hint:"あさ"},{text:"しゅくだい",kanji:"宿題",hint:"いえでやる"},{text:"きょうしつ",kanji:"教室",hint:"へや"},{text:"あんぜん",kanji:"安全",hint:"あぶなくない"},{text:"せいかつ",kanji:"生活",hint:"くらし"},{text:"びょうき",kanji:"病気",hint:"つらい"},{text:"かいしゃ",kanji:"会社",hint:"おしごと"},{text:"しんゆう",kanji:"親友",hint:"なかよし"},{text:"だいじ",kanji:"大事",hint:"たいせつ"},{text:"ひろば",kanji:"広場",hint:"ひろい"},{text:"こうえん",kanji:"公園",hint:"あそぶ"},{text:"どうぐ",kanji:"道具",hint:"つかうもの"},{text:"なまえ",kanji:"名前",hint:"よばれる"},{text:"かんじ",kanji:"漢字",hint:"もじ"},{text:"せかい",kanji:"世界",hint:"ちきゅう"},{text:"にほん",kanji:"日本",hint:"くに"},{text:"どうぶつ",kanji:"動物",hint:"いきもの"},{text:"じかん",kanji:"時間",hint:"とけい"},{text:"とけい",kanji:"時計",hint:"はかる"},{text:"でんしゃ",kanji:"電車",hint:"のりもの"},{text:"りょこう",kanji:"旅行",hint:"でかける"},{text:"うんどう",kanji:"運動",hint:"うごく"},{text:"やきゅう",kanji:"野球",hint:"ボール"},{text:"どくしょ",kanji:"読書",hint:"ほんをよむ"},{text:"けいさん",kanji:"計算",hint:"すうじ"},{text:"まいあさ",kanji:"毎朝",hint:"あさ"},{text:"きょうだい",kanji:"兄弟",hint:"あにおとうと"},{text:"しまい",kanji:"姉妹",hint:"あねいもうと"},{text:"さゆう",kanji:"左右",hint:"みぎひだり"},{text:"じょうげ",kanji:"上下",hint:"うえした"},{text:"ぜんご",kanji:"前後",hint:"まえうしろ"},{text:"とうざい",kanji:"東西",hint:"ひがしにし"},{text:"なんぼく",kanji:"南北",hint:"みなみきた"},{text:"しゅんか",kanji:"春夏",hint:"はるなつ"},{text:"しゅうとう",kanji:"秋冬",hint:"あきふゆ"},{text:"たしょう",kanji:"多少",hint:"おおいすくない"},{text:"だいしょう",kanji:"大小",hint:"おおきいちいさい"},{text:"ずこう",kanji:"図工",hint:"えをかく"},{text:"ほどう",kanji:"歩道",hint:"あるくみち"},{text:"こうさく",kanji:"工作",hint:"つくる"},{text:"いけん",kanji:"意見",hint:"お思うこと"},{text:"あいて",kanji:"相手",hint:"むこう"},{text:"じゅうしょ",kanji:"住所",hint:"すむところ"},{text:"ばんごう",kanji:"番号",hint:"すうじ"},{text:"きごう",kanji:"記号",hint:"マーク"},{text:"よてい",kanji:"予定",hint:"けいかく"},{text:"そうだん",kanji:"相談",hint:"はなしあう"},{text:"あんしん",kanji:"安心",hint:"ほっとする"},{text:"しゅっぱつ",kanji:"出発",hint:"でかける"},{text:"しんこう",kanji:"進行",hint:"すすむ"},{text:"ゆうしょく",kanji:"夕食",hint:"ばんごはん"},{text:"ちょうしょく",kanji:"朝食",hint:"あさごはん"},{text:"ちゅうしょく",kanji:"昼食",hint:"ひるごはん"},{text:"やしょく",kanji:"夜食",hint:"よるごはん"},{text:"しょくじ",kanji:"食事",hint:"たべる"},{text:"かいがん",kanji:"海岸",hint:"うみべ"},{text:"じょうしゃ",kanji:"乗車",hint:"のる"},{text:"げしゃ",kanji:"下車",hint:"おりる"},{text:"じょうば",kanji:"乗馬",hint:"うまにのる"},{text:"すいえい",kanji:"水泳",hint:"およぐ"},{text:"たいじゅう",kanji:"体重",hint:"おもさ"},{text:"しんちょう",kanji:"身長",hint:"たかさ"},{text:"たいりょく",kanji:"体力",hint:"ちから"},{text:"きょうりょく",kanji:"強力",hint:"つよい"},{text:"じゃくてん",kanji:"弱点",hint:"よわい"},{text:"ひゃくてん",kanji:"百点",hint:"テスト"},{text:"ばんこく",kanji:"万国",hint:"せかい"},{text:"ぜんこく",kanji:"全国",hint:"にほん"},{text:"ぜんいん",kanji:"全員",hint:"みんな"},{text:"はんぶん",kanji:"半分",hint:"わける"},{text:"はんとう",kanji:"半島",hint:"ちけい"},{text:"れっとう",kanji:"列島",hint:"しま"},{text:"ひょうざん",kanji:"氷山",hint:"こおり"},{text:"すみび",kanji:"炭火",hint:"あつい"},{text:"おんすい",kanji:"温水",hint:"あたたかい"},{text:"やっきょく",kanji:"薬局",hint:"くすり"},{text:"きょくいん",kanji:"局員",hint:"はたらく"},{text:"いいん",kanji:"委員",hint:"クラス"},{text:"やくいん",kanji:"役員",hint:"まとめる"},{text:"しゅじん",kanji:"主人",hint:"えらい"},{text:"しゅやく",kanji:"主役",hint:"めだつ"},{text:"とうしゅ",kanji:"投手",hint:"なげる"},{text:"かしゅ",kanji:"歌手",hint:"うたう"},{text:"めいしゅ",kanji:"名手",hint:"うまい"},{text:"じょしゅ",kanji:"助手",hint:"たすける"},{text:"じょげん",kanji:"助言",hint:"アドバイス"},{text:"はつげん",kanji:"発言",hint:"しゃべる"},{text:"はつおん",kanji:"発音",hint:"こえ"},{text:"あしおと",kanji:"足音",hint:"あるく"},{text:"あしくび",kanji:"足首",hint:"からだ"},{text:"てくび",kanji:"手首",hint:"からだ"},{text:"しゅしょう",kanji:"首相",hint:"えらい"},{text:"たいし",kanji:"大使",hint:"つかい"},{text:"てんし",kanji:"天使",hint:"そら"},{text:"あくにん",kanji:"悪人",hint:"わるい"},{text:"びじん",kanji:"美人",hint:"きれい"},{text:"びじょ",kanji:"美女",hint:"きれい"},{text:"しょうじょ",kanji:"少女",hint:"おんなのこ"},{text:"しょうねん",kanji:"少年",hint:"おとこのこ"},{text:"せいねん",kanji:"青年",hint:"わかもの"},{text:"おとな",kanji:"大人",hint:"おおきい"},{text:"こびと",kanji:"小人",hint:"ちいさい"},{text:"しゅご",kanji:"主語",hint:"ぶんしょう"},{text:"ようご",kanji:"用語",hint:"ことば"}]
+      len1: [
+        {text:"みず",kanji:"水",hint:"のむもの"},{text:"やま",kanji:"山",hint:"高いところ"},{text:"かわ",kanji:"川",hint:"水が流れる"},
+        {text:"き",kanji:"木",hint:"もりにある"},{text:"ひ",kanji:"日",hint:"おひさま"},{text:"つき",kanji:"月",hint:"夜の空"},
+        {text:"ひ",kanji:"火",hint:"もえる、あつい"},{text:"つち",kanji:"土",hint:"地面、どろ"},{text:"きん",kanji:"金",hint:"おかね"},
+        {text:"ほん",kanji:"本",hint:"読むもの"},{text:"て",kanji:"手",hint:"つかむ"},{text:"あし",kanji:"足",hint:"歩く、走る"},
+        {text:"め",kanji:"目",hint:"見る"},{text:"みみ",kanji:"耳",hint:"聞く"},{text:"くち",kanji:"口",hint:"食べる、話す"},
+        {text:"はな",kanji:"鼻",hint:"においをかぐ"},{text:"ひと",kanji:"人",hint:"にんげん"},{text:"こ",kanji:"子",hint:"こども"},
+        {text:"おんな",kanji:"女",hint:"女の子"},{text:"おとこ",kanji:"男",hint:"男の子"},{text:"そら",kanji:"空",hint:"青い、上"},
+        {text:"うみ",kanji:"海",hint:"広くてしょっぱい"},{text:"かぜ",kanji:"風",hint:"ふいてくる"},{text:"おと",kanji:"音",hint:"聞こえる"},
+        {text:"あめ",kanji:"雨",hint:"空からふる"},{text:"ゆき",kanji:"雪",hint:"冬の白いもの"},{text:"はる",kanji:"春",hint:"あたたかい季節"},
+        {text:"なつ",kanji:"夏",hint:"あつい季節"},{text:"あき",kanji:"秋",hint:"すずしい季節"},{text:"ふゆ",kanji:"冬",hint:"さむい季節"},
+        {text:"えん",kanji:"円",hint:"おかねの単位"},{text:"いし",kanji:"石",hint:"かたい、道にある"},{text:"た",kanji:"田",hint:"お米を育てる"},
+        {text:"もり",kanji:"森",hint:"木がいっぱい"},{text:"むら",kanji:"村",hint:"人が少ない場所"},{text:"あさ",kanji:"朝",hint:"おきる時間"},
+        {text:"よる",kanji:"夜",hint:"ねむる時間"},{text:"いけ",kanji:"池",hint:"水がたまるところ"},{text:"はな",kanji:"花",hint:"さく、きれい"},
+        {text:"くさ",kanji:"草",hint:"みどり色"},{text:"うし",kanji:"牛",hint:"モー"},{text:"うま",kanji:"馬",hint:"ヒヒーン"},
+        {text:"いぬ",kanji:"犬",hint:"ワンワン"},{text:"むし",kanji:"虫",hint:"カブトムシなど"},{text:"かい",kanji:"貝",hint:"海にいる、かたい"},
+        {text:"たけ",kanji:"竹",hint:"まっすぐ、みどり"},{text:"じ",kanji:"字",hint:"書くもの"},{text:"え",kanji:"絵",hint:"かくもの"},
+        {text:"こころ",kanji:"心",hint:"気持ち"},{text:"ちから",kanji:"力",hint:"パワー"},{text:"もん",kanji:"門",hint:"入り口のドア"},
+        {text:"いろ",kanji:"色",hint:"赤や青"},{text:"まち",kanji:"町",hint:"にぎやかな場所"},{text:"いと",kanji:"糸",hint:"ぬうもの"},
+        {text:"こえ",kanji:"声",hint:"話す音"},{text:"くるま",kanji:"車",hint:"道路を走る"},{text:"てら",kanji:"寺",hint:"おぼうさんがいる"},
+        {text:"ほし",kanji:"星",hint:"キラキラ光る"},{text:"くも",kanji:"雲",hint:"空にうかぶ白"},{text:"たに",kanji:"谷",hint:"山と山の間"},
+        {text:"いわ",kanji:"岩",hint:"大きな石"},{text:"はら",kanji:"原",hint:"広い場所、草原"},{text:"の",kanji:"野",hint:"草がはえている"},
+        {text:"うた",kanji:"歌",hint:"うたう"},{text:"かみ",kanji:"紙",hint:"書いたり折ったり"},{text:"つくえ",kanji:"机",hint:"勉強する台"},
+        {text:"かお",kanji:"顔",hint:"目や鼻がある"},{text:"ふね",kanji:"船",hint:"海をすすむ"},{text:"みち",kanji:"道",hint:"歩くところ"},
+        {text:"てん",kanji:"点",hint:"テストの点数"},{text:"ひかり",kanji:"光",hint:"明るい、ピカッ"},{text:"くび",kanji:"首",hint:"頭の下"},
+        {text:"せん",kanji:"線",hint:"まっすぐなスジ"},{text:"えき",kanji:"駅",hint:"電車にのる場所"},{text:"ひる",kanji:"昼",hint:"明るい時間"},
+        {text:"むかし",kanji:"昔",hint:"ずっと前"},{text:"いま",kanji:"今",hint:"現在、この時間"},{text:"あに",kanji:"兄",hint:"年上の男"},
+        {text:"おとうと",kanji:"弟",hint:"年下の男"},{text:"あね",kanji:"姉",hint:"年上の女"},{text:"いもうと",kanji:"妹",hint:"年下の女"},
+        {text:"にく",kanji:"肉",hint:"食べる、牛や豚"},{text:"ち",kanji:"血",hint:"赤い、けが"},{text:"むぎ",kanji:"麦",hint:"パンのもと"},
+        {text:"こめ",kanji:"米",hint:"ごはん"},{text:"まめ",kanji:"豆",hint:"えだまめ、大豆"},{text:"ゆみ",kanji:"弓",hint:"矢をとばす"},
+        {text:"や",kanji:"矢",hint:"とんでいく"},{text:"かたな",kanji:"刀",hint:"昔の武器"},{text:"はね",kanji:"羽",hint:"鳥にはえている"},
+        {text:"け",kanji:"毛",hint:"ふさふさ"},{text:"ひつじ",kanji:"羊",hint:"メー、白い"},{text:"とり",kanji:"鳥",hint:"空をとぶ"},
+        {text:"さかな",kanji:"魚",hint:"およぐ"}
+      ],
+      len2: [
+        {text:"さんすう",kanji:"算数",hint:"たし算、ひき算"},{text:"こくご",kanji:"国語",hint:"漢字や物語"},{text:"りか",kanji:"理科",hint:"実験、観察"},
+        {text:"しゃかい",kanji:"社会",hint:"地図、歴史"},{text:"たいいく",kanji:"体育",hint:"運動する"},{text:"おんがく",kanji:"音楽",hint:"歌、楽器"},
+        {text:"りょうしん",kanji:"両親",hint:"父と母"},{text:"ともだち",kanji:"友達",hint:"仲良しの子"},{text:"がっこう",kanji:"学校",hint:"勉強する場所"},
+        {text:"せんせい",kanji:"先生",hint:"教える大人"},{text:"にっき",kanji:"日記",hint:"毎日書くノート"},{text:"えんそく",kanji:"遠足",hint:"お弁当でお出かけ"},
+        {text:"てんき",kanji:"天気",hint:"晴れや雨"},{text:"げんき",kanji:"元気",hint:"パワーいっぱい"},{text:"あさひ",kanji:"朝日",hint:"朝の太陽"},
+        {text:"しゅくだい",kanji:"宿題",hint:"家でやる勉強"},{text:"きょうしつ",kanji:"教室",hint:"勉強する部屋"},{text:"あんぜん",kanji:"安全",hint:"あぶなくない"},
+        {text:"せいかつ",kanji:"生活",hint:"毎日のくらし"},{text:"びょうき",kanji:"病気",hint:"体がいたくなる"},{text:"かいしゃ",kanji:"会社",hint:"大人が働く場所"},
+        {text:"しんゆう",kanji:"親友",hint:"一番仲良し"},{text:"だいじ",kanji:"大事",hint:"とても大切"},{text:"ひろば",kanji:"広場",hint:"広い場所"},
+        {text:"こうえん",kanji:"公園",hint:"遊具がある場所"},{text:"どうぐ",kanji:"道具",hint:"使うもの"},{text:"なまえ",kanji:"名前",hint:"呼ぶ言葉"},
+        {text:"かんじ",kanji:"漢字",hint:"中国からの文字"},{text:"せかい",kanji:"世界",hint:"地球のすべて"},{text:"にほん",kanji:"日本",hint:"私たちの国"},
+        {text:"どうぶつ",kanji:"動物",hint:"動く生き物"},{text:"じかん",kanji:"時間",hint:"時計がすすむ"},{text:"とけい",kanji:"時計",hint:"時間がわかる"},
+        {text:"でんしゃ",kanji:"電車",hint:"線路を走る"},{text:"りょこう",kanji:"旅行",hint:"遠くへお出かけ"},{text:"うんどう",kanji:"運動",hint:"体を動かす"},
+        {text:"やきゅう",kanji:"野球",hint:"バットで打つ"},{text:"どくしょ",kanji:"読書",hint:"本を読む"},{text:"けいさん",kanji:"計算",hint:"答えを出す"},
+        {text:"まいあさ",kanji:"毎朝",hint:"朝いつも"},{text:"きょうだい",kanji:"兄弟",hint:"兄と弟"},{text:"しまい",kanji:"姉妹",hint:"姉と妹"},
+        {text:"さゆう",kanji:"左右",hint:"右と左"},{text:"じょうげ",kanji:"上下",hint:"上と下"},{text:"ぜんご",kanji:"前後",hint:"前と後ろ"},
+        {text:"とうざい",kanji:"東西",hint:"東と西"},{text:"なんぼく",kanji:"南北",hint:"南と北"},{text:"しゅんか",kanji:"春夏",hint:"春と夏"},
+        {text:"しゅうとう",kanji:"秋冬",hint:"秋と冬"},{text:"たしょう",kanji:"多少",hint:"多いと少ない"},{text:"だいしょう",kanji:"大小",hint:"大きいと小さい"},
+        {text:"ずこう",kanji:"図工",hint:"絵や工作"},{text:"ほどう",kanji:"歩道",hint:"人が歩く道"},{text:"こうさく",kanji:"工作",hint:"物を作ること"},
+        {text:"いけん",kanji:"意見",hint:"自分の考え"},{text:"あいて",kanji:"相手",hint:"向こう側の人"},{text:"じゅうしょ",kanji:"住所",hint:"家がある場所"},
+        {text:"ばんごう",kanji:"番号",hint:"順番の数字"},{text:"きごう",kanji:"記号",hint:"丸やバツのマーク"},{text:"よてい",kanji:"予定",hint:"これからの計画"},
+        {text:"そうだん",kanji:"相談",hint:"話し合うこと"},{text:"あんしん",kanji:"安心",hint:"ホッとする"},{text:"しゅっぱつ",kanji:"出発",hint:"出かけること"},
+        {text:"しんこう",kanji:"進行",hint:"前へすすむ"},{text:"ゆうしょく",kanji:"夕食",hint:"夜ごはん"},{text:"ちょうしょく",kanji:"朝食",hint:"朝ごはん"},
+        {text:"ちゅうしょく",kanji:"昼食",hint:"昼ごはん"},{text:"やしょく",kanji:"夜食",hint:"夜おそくのごはん"},{text:"しょくじ",kanji:"食事",hint:"ごはんを食べる"},
+        {text:"かいがん",kanji:"海岸",hint:"海の砂浜"},{text:"じょうしゃ",kanji:"乗車",hint:"電車に乗る"},{text:"げしゃ",kanji:"下車",hint:"電車から降りる"},
+        {text:"じょうば",kanji:"乗馬",hint:"馬に乗る"},{text:"すいえい",kanji:"水泳",hint:"プールで泳ぐ"},{text:"たいじゅう",kanji:"体重",hint:"体の重さ"},
+        {text:"しんちょう",kanji:"身長",hint:"背の高さ"},{text:"たいりょく",kanji:"体力",hint:"体のパワー"},{text:"きょうりょく",kanji:"強力",hint:"とても力が強い"},
+        {text:"じゃくてん",kanji:"弱点",hint:"弱いところ"},{text:"ひゃくてん",kanji:"百点",hint:"テストで一番"},{text:"ばんこく",kanji:"万国",hint:"世界中の国"},
+        {text:"ぜんこく",kanji:"全国",hint:"日本中"},{text:"ぜんいん",kanji:"全員",hint:"みんな"},{text:"はんぶん",kanji:"半分",hint:"二つに分けた一つ"},
+        {text:"はんとう",kanji:"半島",hint:"つき出た陸地"},{text:"れっとう",kanji:"列島",hint:"ならんだ島"},{text:"ひょうざん",kanji:"氷山",hint:"氷の大きな山"},
+        {text:"すみび",kanji:"炭火",hint:"木炭の火"},{text:"おんすい",kanji:"温水",hint:"あたたかいお湯"},{text:"やっきょく",kanji:"薬局",hint:"薬のお店"},
+        {text:"きょくいん",kanji:"局員",hint:"郵便局で働く人"},{text:"いいん",kanji:"委員",hint:"クラスの係"},{text:"やくいん",kanji:"役員",hint:"まとめる人"},
+        {text:"しゅじん",kanji:"主人",hint:"家の中心の人"},{text:"しゅやく",kanji:"主役",hint:"一番目立つ人"},{text:"とうしゅ",kanji:"投手",hint:"ピッチャー"},
+        {text:"かしゅ",kanji:"歌手",hint:"歌をうたう人"},{text:"めいしゅ",kanji:"名手",hint:"とても上手な人"},{text:"じょしゅ",kanji:"助手",hint:"手伝う人"},
+        {text:"じょげん",kanji:"助言",hint:"アドバイス"},{text:"はつげん",kanji:"発言",hint:"意見を言う"},{text:"はつおん",kanji:"発音",hint:"声に出して読む"},
+        {text:"あしおと",kanji:"足音",hint:"歩く音"},{text:"あしくび",kanji:"足首",hint:"足の細い部分"},{text:"てくび",kanji:"手首",hint:"手の曲がる部分"},
+        {text:"しゅしょう",kanji:"首相",hint:"政治のリーダー"},{text:"たいし",kanji:"大使",hint:"国の代表"},{text:"てんし",kanji:"天使",hint:"神様のお使い"},
+        {text:"あくにん",kanji:"悪人",hint:"悪い人"},{text:"びじん",kanji:"美人",hint:"きれいな女性"},{text:"びじょ",kanji:"美女",hint:"美しい女性"},
+        {text:"しょうじょ",kanji:"少女",hint:"女の子"},{text:"しょうねん",kanji:"少年",hint:"男の子"},{text:"せいねん",kanji:"青年",hint:"若い男の人"},
+        {text:"おとな",kanji:"大人",hint:"成長した人"},{text:"こびと",kanji:"小人",hint:"小さな人"},{text:"しゅご",kanji:"主語",hint:"だれが、何が"},
+        {text:"ようご",kanji:"用語",hint:"特別な言葉"}
+      ]
     };
 
     const DB_ONLY4 = {
-      len1: [{text:"あい",kanji:"愛",hint:"すき"},{text:"あん",kanji:"案",hint:"かんがえ"},{text:"い",kanji:"以",hint:"より"},{text:"ころも",kanji:"衣",hint:"ふく"},{text:"くらい",kanji:"位",hint:"じゅんい"},{text:"かこむ",kanji:"囲",hint:"まわり"},{text:"い",kanji:"胃",hint:"おなか"},{text:"しるし",kanji:"印",hint:"はんこ"},{text:"えい",kanji:"英",hint:"ことば"},{text:"さかえ",kanji:"栄",hint:"よくなる"},{text:"しお",kanji:"塩",hint:"しょっぱい"},{text:"おく",kanji:"億",hint:"かず"},{text:"くわえる",kanji:"加",hint:"たす"},{text:"はたす",kanji:"果",hint:"くだもの"},{text:"か",kanji:"貨",hint:"おかね"},{text:"か",kanji:"課",hint:"チーム"},{text:"め",kanji:"芽",hint:"はっぱ"},{text:"あらためる",kanji:"改",hint:"なおす"},{text:"かい",kanji:"械",hint:"キカイ"},{text:"がい",kanji:"害",hint:"わるい"},{text:"まち",kanji:"街",hint:"みち"},{text:"おのおの",kanji:"各",hint:"それぞれ"},{text:"おぼえる",kanji:"覚",hint:"きおく"},{text:"かん",kanji:"完",hint:"おわる"},{text:"かん",kanji:"官",hint:"やくしょ"},{text:"くだ",kanji:"管",hint:"パイプ"},{text:"せき",kanji:"関",hint:"かかわり"},{text:"みる",kanji:"観",hint:"けしき"},{text:"ねがい",kanji:"願",hint:"いのり"},{text:"き",kanji:"希",hint:"のぞむ"},{text:"き",kanji:"季",hint:"きせつ"},{text:"き",kanji:"紀",hint:"じだい"},{text:"よろこび",kanji:"喜",hint:"うれしい"},{text:"はた",kanji:"旗",hint:"こっき"},{text:"うつわ",kanji:"器",hint:"おさら"},{text:"はた",kanji:"機",hint:"きかい"},{text:"ぎ",kanji:"議",hint:"はなしあう"},{text:"もとめる",kanji:"求",hint:"さがす"},{text:"なく",kanji:"泣",hint:"なみだ"},{text:"すくう",kanji:"救",hint:"たすける"},{text:"たまう",kanji:"給",hint:"あげる"},{text:"あげる",kanji:"挙",hint:"てをあげる"},{text:"りょう",kanji:"漁",hint:"さかなとる"},{text:"とも",kanji:"共",hint:"いっしょに"},{text:"きょう",kanji:"協",hint:"たすけあう"},{text:"かがみ",kanji:"鏡",hint:"うつす"},{text:"きそう",kanji:"競",hint:"あらそう"},{text:"きわみ",kanji:"極",hint:"はて"},{text:"くん",kanji:"訓",hint:"おしえる"},{text:"ぐん",kanji:"軍",hint:"ぐんたい"},{text:"ぐん",kanji:"郡",hint:"ちいき"},{text:"みち",kanji:"径",hint:"ちょっけい"},{text:"かた",kanji:"型",hint:"かたち"},{text:"けい",kanji:"景",hint:"けしき"},{text:"かける",kanji:"欠",hint:"たりない"},{text:"むすぶ",kanji:"結",hint:"つなぐ"},{text:"たてる",kanji:"建",hint:"たてもの"},{text:"すこやか",kanji:"健",hint:"げんき"},{text:"ためす",kanji:"験",hint:"テスト"},{text:"かたい",kanji:"固",hint:"しっかり"},{text:"こう",kanji:"功",hint:"せいこう"},{text:"こう",kanji:"候",hint:"きこう"},{text:"こう",kanji:"航",hint:"ふね"},{text:"こう",kanji:"康",hint:"けんこう"},{text:"つげる",kanji:"告",hint:"しらせる"},{text:"さ",kanji:"差",hint:"ちがい"},{text:"な",kanji:"菜",hint:"やさい"},{text:"もっとも",kanji:"最",hint:"いちばん"},{text:"ざい",kanji:"材",hint:"き"},{text:"さく",kanji:"昨",hint:"きのう"},{text:"ふだ",kanji:"札",hint:"カード"},{text:"する",kanji:"刷",hint:"プリント"},{text:"まと",kanji:"的",hint:"あてる"},{text:"さつ",kanji:"察",hint:"みる"},{text:"さん",kanji:"参",hint:"くわわる"},{text:"うむ",kanji:"産",hint:"うまれる"},{text:"ちる",kanji:"散",hint:"ばらばら"},{text:"のこり",kanji:"残",hint:"あまった"},{text:"し",kanji:"氏",hint:"なまえ"},{text:"し",kanji:"史",hint:"むかし"},{text:"し",kanji:"司",hint:"まとめる"},{text:"こころみる",kanji:"試",hint:"テスト"},{text:"じ",kanji:"児",hint:"こども"},{text:"なおる",kanji:"治",hint:"びょうき"},{text:"やめる",kanji:"辞",hint:"ことば"},{text:"うしなう",kanji:"失",hint:"なくす"},{text:"かりる",kanji:"借",hint:"おかね"},{text:"たね",kanji:"種",hint:"はな"},{text:"まわり",kanji:"周",hint:"ぐるり"},{text:"いわい",kanji:"祝",hint:"めでたい"},{text:"じゅん",kanji:"順",hint:"ばんごう"},{text:"はじめ",kanji:"初",hint:"さいしょ"},{text:"まつ",kanji:"松",hint:"き"},{text:"わらう",kanji:"笑",hint:"あはは"},{text:"うたう",kanji:"唱",hint:"こえ"},{text:"やく",kanji:"焼",hint:"ひ"},{text:"ぞう",kanji:"象",hint:"どうぶつ"},{text:"てらす",kanji:"照",hint:"ひかり"},{text:"しょう",kanji:"賞",hint:"もらう"},{text:"しん",kanji:"臣",hint:"えらい"},{text:"しん",kanji:"信",hint:"まこと"},{text:"なる",kanji:"成",hint:"できる"},{text:"はぶく",kanji:"省",hint:"へらす"},{text:"きよい",kanji:"清",hint:"きれい"},{text:"しずか",kanji:"静",hint:"しずか"},{text:"せき",kanji:"席",hint:"すわる"},{text:"つむ",kanji:"積",hint:"かさねる"},{text:"おる",kanji:"折",hint:"まげる"},{text:"ふし",kanji:"節",hint:"きせつ"},{text:"せつ",kanji:"説",hint:"おしえる"},{text:"あさい",kanji:"浅",hint:"みず"},{text:"いくさ",kanji:"戦",hint:"たたかう"},{text:"えらぶ",kanji:"選",hint:"きめる"},{text:"しかり",kanji:"然",hint:"しぜん"},{text:"あらそう",kanji:"争",hint:"ケンカ"},{text:"くら",kanji:"倉",hint:"しまう"},{text:"す",kanji:"巣",hint:"とり"},{text:"たば",kanji:"束",hint:"まとめる"},{text:"がわ",kanji:"側",hint:"よこ"},{text:"つづく",kanji:"続",hint:"おわらない"},{text:"そつ",kanji:"卒",hint:"おわる"},{text:"まご",kanji:"孫",hint:"こどものこ"},{text:"おび",kanji:"帯",hint:"こしに"},{text:"たい",kanji:"隊",hint:"グループ"},{text:"たつ",kanji:"達",hint:"つく"},{text:"ひとつ",kanji:"単",hint:"１つ"},{text:"おく",kanji:"置",hint:"ばしょ"},{text:"なか",kanji:"仲",hint:"なかよし"}],
-      len2: [{text:"けんこう",kanji:"健康",hint:"じょうぶ"},{text:"きかい",kanji:"機械",hint:"こうじょう"},{text:"じてん",kanji:"辞典",hint:"しらべる"},{text:"しゅるい",kanji:"種類",hint:"なかま"},{text:"かんさつ",kanji:"観察",hint:"よくみる"},{text:"きょうそう",kanji:"競争",hint:"かけっこ"},{text:"しっぱい",kanji:"失敗",hint:"みす"},{text:"せいこう",kanji:"成功",hint:"うまくいく"},{text:"せつめい",kanji:"説明",hint:"おしえる"},{text:"きょうりょく",kanji:"協力",hint:"たすけあう"},{text:"くんれん",kanji:"訓練",hint:"れんしゅう"},{text:"どりょく",kanji:"努力",hint:"がんばる"},{text:"もくひょう",kanji:"目標",hint:"あて"},{text:"めんせき",kanji:"面積",hint:"ひろさ"},{text:"れんぞく",kanji:"連続",hint:"つづく"},{text:"がっき",kanji:"楽器",hint:"おとをだす"},{text:"かいぎ",kanji:"会議",hint:"はなしあう"},{text:"そつぎょう",kanji:"卒業",hint:"おえる"},{text:"やくそく",kanji:"約束",hint:"まもりごと"},{text:"めいれい",kanji:"命令",hint:"いいつける"},{text:"こうこく",kanji:"広告",hint:"ぽすたー"},{text:"さんぎょう",kanji:"産業",hint:"しごと"},{text:"せんきょ",kanji:"選挙",hint:"えらぶ"},{text:"しがい",kanji:"市街",hint:"まち"},{text:"とうひょう",kanji:"投票",hint:"えらぶ"},{text:"しゃりん",kanji:"車輪",hint:"わ"},{text:"えいご",kanji:"英語",hint:"ことば"},{text:"いちおく",kanji:"一億",hint:"かず"},{text:"くだもの",kanji:"果物",hint:"たべる"},{text:"かもつ",kanji:"貨物",hint:"にもつ"},{text:"はつが",kanji:"発芽",hint:"めがでる"},{text:"かいりょう",kanji:"改良",hint:"よくする"},{text:"こうがい",kanji:"公害",hint:"わるいもの"},{text:"かくじ",kanji:"各自",hint:"それぞれ"},{text:"けんこく",kanji:"建国",hint:"くに"},{text:"へいし",kanji:"兵士",hint:"たたかう"},{text:"ぼくじょう",kanji:"牧場",hint:"うし"},{text:"きせつ",kanji:"季節",hint:"はるなつ"},{text:"じしょ",kanji:"辞書",hint:"しらべる"},{text:"りそう",kanji:"理想",hint:"ねがい"},{text:"ゆうき",kanji:"勇気",hint:"ちから"},{text:"ろうどう",kanji:"労働",hint:"はたらく"},{text:"ちょきん",kanji:"貯金",hint:"おかね"},{text:"いちょう",kanji:"胃腸",hint:"おなか"},{text:"いんさつ",kanji:"印刷",hint:"プリント"},{text:"かちょう",kanji:"課長",hint:"やくしょく"},{text:"きゅうりょう",kanji:"給料",hint:"おかね"},{text:"ぎょぎょう",kanji:"漁業",hint:"さかな"},{text:"きょうつう",kanji:"共通",hint:"おなじ"},{text:"きょうだい",kanji:"鏡台",hint:"かがみ"},{text:"ぐんぶ",kanji:"郡部",hint:"ちいき"},{text:"けいき",kanji:"景気",hint:"けいざい"},{text:"けっせき",kanji:"欠席",hint:"やすむ"},{text:"けつまつ",kanji:"結末",hint:"さいご"},{text:"しりょう",kanji:"資料",hint:"データ"},{text:"あいけん",kanji:"愛犬",hint:"いぬ"},{text:"あんない",kanji:"案内",hint:"おしえる"},{text:"いじょう",kanji:"以上",hint:"それよりうえ"},{text:"いふく",kanji:"衣服",hint:"ふく"},{text:"いち",kanji:"位置",hint:"ばしょ"},{text:"しゅうい",kanji:"周囲",hint:"まわり"},{text:"えいゆう",kanji:"英雄",hint:"ヒーロー"},{text:"えいよう",kanji:"栄養",hint:"からだにいい"},{text:"えんぶん",kanji:"塩分",hint:"しお"},{text:"せいか",kanji:"成果",hint:"けっか"},{text:"かだい",kanji:"課題",hint:"テーマ"},{text:"しんめ",kanji:"新芽",hint:"あたらしいめ"},{text:"かんかく",kanji:"感覚",hint:"かんじる"},{text:"かんせい",kanji:"完成",hint:"できあがり"},{text:"ちょうかん",kanji:"長官",hint:"えらいひと"},{text:"かんり",kanji:"管理",hint:"まとめる"},{text:"かんけい",kanji:"関係",hint:"つながり"},{text:"ねんがん",kanji:"念願",hint:"ねがい"},{text:"きぼう",kanji:"希望",hint:"のぞみ"},{text:"しき",kanji:"四季",hint:"はるなつあきふゆ"},{text:"せいき",kanji:"世紀",hint:"ひゃくねん"},{text:"こっき",kanji:"国旗",hint:"くにのはた"},{text:"きぐ",kanji:"器具",hint:"どうぐ"},{text:"きかい",kanji:"機会",hint:"チャンス"},{text:"ようきゅう",kanji:"要求",hint:"もとめる"},{text:"ごうきゅう",kanji:"号泣",hint:"なく"},{text:"きゅうじょ",kanji:"救助",hint:"たすける"},{text:"きゅうしょく",kanji:"給食",hint:"おひるごはん"},{text:"きょうどう",kanji:"共同",hint:"いっしょに"},{text:"ちょっけい",kanji:"直径",hint:"まるのながさ"},{text:"てんけい",kanji:"典型",hint:"パターン"},{text:"ふうけい",kanji:"風景",hint:"けしき"},{text:"けつごう",kanji:"結合",hint:"くっつく"},{text:"けんぜん",kanji:"健全",hint:"けんこう"},{text:"じっけん",kanji:"実験",hint:"ためす"},{text:"しけん",kanji:"試験",hint:"テスト"},{text:"こてい",kanji:"固定",hint:"うごかない"},{text:"きこう",kanji:"気候",hint:"てんき"},{text:"こうくう",kanji:"航空",hint:"そらをとぶ"},{text:"さべつ",kanji:"差別",hint:"わける"},{text:"やさい",kanji:"野菜",hint:"たべる"},{text:"さい最高",kanji:"最高",hint:"いちばん"},{text:"もくざい",kanji:"木材",hint:"きのいた"},{text:"きのう",kanji:"昨日",hint:"まえのひ"},{text:"とくべつ",kanji:"特別",hint:"ほかとちがう"},{text:"さんか",kanji:"参加",hint:"くわわる"},{text:"さんぽ",kanji:"散歩",hint:"あるく"},{text:"あいこく",kanji:"愛国",hint:"くに"},{text:"いか",kanji:"以下",hint:"それよりした"},{text:"えい英文",kanji:"英文",hint:"えいご"},{text:"えいこう",kanji:"栄光",hint:"ひかり"},{text:"えんすい",kanji:"塩水",hint:"しょっぱい"},{text:"おくまん",kanji:"億万",hint:"かず"},{text:"かさん",kanji:"加算",hint:"たす"},{text:"かじつ",kanji:"果実",hint:"み"},{text:"かいぎょう",kanji:"改行",hint:"つぎのぎょう"},{text:"がいちゅう",kanji:"害虫",hint:"むし"},{text:"まちかど",kanji:"街角",hint:"かど"},{text:"だいじん",kanji:"大臣",hint:"えらいひと"},{text:"せきしょ",kanji:"関所",hint:"むかしのばしょ"},{text:"がんぼう",kanji:"願望",hint:"ねがい"},{text:"だいき",kanji:"大喜",hint:"よろこぶ"},{text:"きゅうしゅつ",kanji:"救出",hint:"たすける"},{text:"きょしゅ",kanji:"挙手",hint:"てをあげる"},{text:"ぎょせん",kanji:"漁船",hint:"さかなのふね"},{text:"てかがみ",kanji:"手鏡",hint:"みる"},{text:"はんけい",kanji:"半径",hint:"まるのながさ"},{text:"おおがた",kanji:"大型",hint:"おおきい"},{text:"けしき",kanji:"景色",hint:"みる"},{text:"けってん",kanji:"欠点",hint:"わるいところ"},{text:"けっせい",kanji:"結成",hint:"チーム"},{text:"たいけん",kanji:"体験",hint:"けいけん"},{text:"てんこう",kanji:"天候",hint:"てんき"},{text:"こうかい",kanji:"航海",hint:"ふね"},{text:"こくはく",kanji:"告白",hint:"つたえる"},{text:"てんさ",kanji:"点差",hint:"ちがい"},{text:"なふだ",kanji:"名札",hint:"なまえ"}]
+      len1: [
+        {text:"あい",kanji:"愛",hint:"大切に思う気持ち"},{text:"あん",kanji:"案",hint:"アイディア"},{text:"い",kanji:"胃",hint:"食べたものが入るふくろ"},
+        {text:"しるし",kanji:"印",hint:"ハンコ"},{text:"しお",kanji:"塩",hint:"しょっぱい"},{text:"おく",kanji:"億",hint:"とても大きな数"},
+        {text:"め",kanji:"芽",hint:"小さな葉っぱ"},{text:"まち",kanji:"街",hint:"にぎやかな場所"},{text:"うつわ",kanji:"器",hint:"お皿やどんぶり"},
+        {text:"はた",kanji:"旗",hint:"風にゆれる布"},{text:"かがみ",kanji:"鏡",hint:"顔をうつす"},{text:"かた",kanji:"型",hint:"形をつくるもの"},
+        {text:"さ",kanji:"差",hint:"ひき算の答え"},{text:"ざい",kanji:"材",hint:"家や家具を作るもと"},{text:"ふだ",kanji:"札",hint:"文字のカード"},
+        {text:"たね",kanji:"種",hint:"まくと芽が出る"},{text:"じゅん",kanji:"順",hint:"ならび方のこと"},{text:"まつ",kanji:"松",hint:"チクチクした葉の木"},
+        {text:"ぞう",kanji:"象",hint:"鼻が長い動物"},{text:"しょう",kanji:"賞",hint:"ごほうび"},{text:"せき",kanji:"席",hint:"すわる場所"},
+        {text:"ふし",kanji:"節",hint:"竹のかたい部分"},{text:"せつ",kanji:"説",hint:"自分の考え"},{text:"くら",kanji:"倉",hint:"物をしまう建物"},
+        {text:"す",kanji:"巣",hint:"鳥や虫の家"},{text:"たば",kanji:"束",hint:"一つにまとめたもの"},{text:"まご",kanji:"孫",hint:"子供の子供"},
+        {text:"おび",kanji:"帯",hint:"腰にまく布"},{text:"たい",kanji:"隊",hint:"チーム"},{text:"なか",kanji:"仲",hint:"人とのつながり"},
+        {text:"ちょう",kanji:"腸",hint:"おなかの中の管"},{text:"そこ",kanji:"底",hint:"一番下の部分"},{text:"まと",kanji:"的",hint:"ねらいをあてる"},
+        {text:"てん",kanji:"典",hint:"言葉を調べる本"},{text:"ねん",kanji:"念",hint:"強く思うこと"},{text:"うめ",kanji:"梅",hint:"すっぱい実がなる"},
+        {text:"めし",kanji:"飯",hint:"ごはん"},{text:"ひょう",kanji:"票",hint:"選挙で書く紙"},{text:"おっと",kanji:"夫",hint:"だんなさん"},
+        {text:"こな",kanji:"粉",hint:"サラサラのつぶ"},{text:"へい",kanji:"兵",hint:"戦う人たち"},{text:"ぐん",kanji:"郡",hint:"県の下の区切り"},
+        {text:"びん",kanji:"便",hint:"手紙、空とぶ船"},{text:"ほう",kanji:"法",hint:"ルール"},{text:"すえ",kanji:"末",hint:"一番終わり"},
+        {text:"みゃく",kanji:"脈",hint:"動く血管"},{text:"たみ",kanji:"民",hint:"住んでいる人々"},{text:"りく",kanji:"陸",hint:"海ではない地面"},
+        {text:"わ",kanji:"輪",hint:"丸い形、タイヤ"},{text:"るい",kanji:"類",hint:"同じ特徴のグループ"},{text:"れい",kanji:"令",hint:"言いつけること"},
+        {text:"くだ",kanji:"管",hint:"丸いパイプ"},{text:"ひょう",kanji:"標",hint:"目印、マーク"},{text:"ころも",kanji:"衣",hint:"天ぷらのサクサク"},
+        {text:"き",kanji:"季",hint:"春、夏、秋、冬のこと"},{text:"しろ",kanji:"城",hint:"お殿様の家"},{text:"りょう",kanji:"量",hint:"重さやかさ"},
+        {text:"りょう",kanji:"料",hint:"払うお金"},{text:"れん",kanji:"連",hint:"つながっている"},{text:"どく",kanji:"毒",hint:"体に悪いもの"},
+        {text:"ねつ",kanji:"熱",hint:"体温が高い"},{text:"ほとけ",kanji:"仏",hint:"お寺の神様"},{text:"ちょう",kanji:"兆",hint:"一億の次"},
+        {text:"れい",kanji:"例",hint:"たとえの話"},{text:"ひ",kanji:"灯",hint:"あかり、ランプ"},{text:"じ",kanji:"辞",hint:"やめること、言葉"},
+        {text:"しん",kanji:"臣",hint:"殿様に仕える人"},{text:"ろく",kanji:"録",hint:"ビデオや音を残す"}
+      ],
+      len2: [
+        {text:"けんこう",kanji:"健康",hint:"病気ではない"},{text:"きかい",kanji:"機械",hint:"工場のしくみ"},{text:"じてん",kanji:"辞典",hint:"言葉を調べる本"},
+        {text:"しゅるい",kanji:"種類",hint:"グループ、仲間"},{text:"かんさつ",kanji:"観察",hint:"よく見ること"},{text:"きょうそう",kanji:"競争",hint:"勝負すること"},
+        {text:"しっぱい",kanji:"失敗",hint:"ミスをすること"},{text:"せいこう",kanji:"成功",hint:"うまくいくこと"},{text:"せつめい",kanji:"説明",hint:"くわしく話す"},
+        {text:"きょうりょく",kanji:"協力",hint:"力を合わせる"},{text:"くんれん",kanji:"訓練",hint:"練習すること"},{text:"どりょく",kanji:"努力",hint:"一生懸命がんばる"},
+        {text:"もくひょう",kanji:"目標",hint:"めざすゴール"},{text:"めんせき",kanji:"面積",hint:"広さの数字"},{text:"れんぞく",kanji:"連続",hint:"ずっと続く"},
+        {text:"がっき",kanji:"楽器",hint:"音楽をかなでる"},{text:"かいぎ",kanji:"会議",hint:"話し合うこと"},{text:"そつぎょう",kanji:"卒業",hint:"学校を終える"},
+        {text:"やくそく",kanji:"約束",hint:"決めて守ること"},{text:"めいれい",kanji:"命令",hint:"言いつけること"},{text:"こうこく",kanji:"広告",hint:"ポスターやチラシ"},
+        {text:"さんぎょう",kanji:"産業",hint:"生活を支える仕事"},{text:"せんきょ",kanji:"選挙",hint:"投票で選ぶ"},{text:"しがい",kanji:"市街",hint:"にぎやかな町"},
+        {text:"とうひょう",kanji:"投票",hint:"箱に紙を入れる"},{text:"しゃりん",kanji:"車輪",hint:"タイヤ"},{text:"えいご",kanji:"英語",hint:"アメリカの言葉"},
+        {text:"いちおく",kanji:"一億",hint:"とても大きな数"},{text:"くだもの",kanji:"果物",hint:"フルーツ"},{text:"かもつ",kanji:"貨物",hint:"運ぶ荷物"},
+        {text:"はつが",kanji:"発芽",hint:"芽が出ること"},{text:"かいりょう",kanji:"改良",hint:"もっと良くする"},{text:"こうがい",kanji:"公害",hint:"空や川がよごれる"},
+        {text:"かくじ",kanji:"各自",hint:"一人ひとり"},{text:"けんこく",kanji:"建国",hint:"国をつくる"},{text:"へいし",kanji:"兵士",hint:"戦う人"},
+        {text:"ぼくじょう",kanji:"牧場",hint:"牛や馬を育てる"},{text:"きせつ",kanji:"季節",hint:"春夏秋冬"},{text:"じしょ",kanji:"辞書",hint:"言葉を調べる本"},
+        {text:"りそう",kanji:"理想",hint:"一番よいすがた"},{text:"ゆうき",kanji:"勇気",hint:"こわがらない心"},{text:"ろうどう",kanji:"労働",hint:"働くこと"},
+        {text:"ちょきん",kanji:"貯金",hint:"お金をためる"},{text:"いちょう",kanji:"胃腸",hint:"おなかの中"},{text:"いんさつ",kanji:"印刷",hint:"プリントする"},
+        {text:"かちょう",kanji:"課長",hint:"会社のリーダー"},{text:"きゅうりょう",kanji:"給料",hint:"もらうお金"},{text:"ぎょぎょう",kanji:"漁業",hint:"魚をとる仕事"},
+        {text:"きょうつう",kanji:"共通",hint:"同じ部分がある"},{text:"きょうだい",kanji:"鏡台",hint:"かがみのある机"},{text:"ぐんたい",kanji:"軍隊",hint:"兵士のグループ"},
+        {text:"けいき",kanji:"景気",hint:"お金のうごき"},{text:"けっせき",kanji:"欠席",hint:"休むこと"},{text:"けつまつ",kanji:"結末",hint:"一番最後"},
+        {text:"しりょう",kanji:"資料",hint:"発表のデータ"},{text:"あいけん",kanji:"愛犬",hint:"飼っている犬"},{text:"あんない",kanji:"案内",hint:"道を教える"},
+        {text:"いじょう",kanji:"以上",hint:"それより上"},{text:"いふく",kanji:"衣服",hint:"着る服"},{text:"いち",kanji:"位置",hint:"ある場所"},
+        {text:"しゅうい",kanji:"周囲",hint:"まわり"},{text:"えいゆう",kanji:"英雄",hint:"ヒーロー"},{text:"えいよう",kanji:"栄養",hint:"体を育てる成分"},
+        {text:"えんぶん",kanji:"塩分",hint:"しょっぱい成分"},{text:"せいか",kanji:"成果",hint:"良い結果"},{text:"かだい",kanji:"課題",hint:"やるべきテーマ"},
+        {text:"しんめ",kanji:"新芽",hint:"新しい葉っぱ"},{text:"かんかく",kanji:"感覚",hint:"感じとること"},{text:"かんせい",kanji:"完成",hint:"できあがる"},
+        {text:"かんさい",kanji:"関西",hint:"大阪や京都"},{text:"かんり",kanji:"管理",hint:"良い状態を保つ"},{text:"かんけい",kanji:"関係",hint:"つながり"},
+        {text:"ねんがん",kanji:"念願",hint:"ずっと願っていた"},{text:"きぼう",kanji:"希望",hint:"のぞむこと"},{text:"しき",kanji:"四季",hint:"春夏秋冬"},
+        {text:"せいき",kanji:"世紀",hint:"100年の区切り"},{text:"こっき",kanji:"国旗",hint:"国の旗"},{text:"きぐ",kanji:"器具",hint:"実験の道具"},
+        {text:"きかい",kanji:"機会",hint:"チャンス"},{text:"ようきゅう",kanji:"要求",hint:"強く求める"},{text:"ごうきゅう",kanji:"号泣",hint:"大声で泣く"},
+        {text:"きゅうじょ",kanji:"救助",hint:"助け出す"},{text:"きゅうしょく",kanji:"給食",hint:"学校の昼ごはん"},{text:"きょうどう",kanji:"共同",hint:"みんなで一緒に"},
+        {text:"ちょっけい",kanji:"直径",hint:"円のまん中の長さ"},{text:"てんすう",kanji:"点数",hint:"テストの数字"},{text:"ふうけい",kanji:"風景",hint:"景色やながめ"},
+        {text:"けつごう",kanji:"結合",hint:"結びつく"},{text:"けんぜん",kanji:"健全",hint:"心も体も元気"},{text:"じっけん",kanji:"実験",hint:"ためしてみる"},
+        {text:"しけん",kanji:"試験",hint:"テスト"},{text:"こてい",kanji:"固定",hint:"しっかりとめる"},{text:"きこう",kanji:"気候",hint:"1年間の天気"},
+        {text:"こうくう",kanji:"航空",hint:"空を飛ぶ"},{text:"さべつ",kanji:"差別",hint:"えこひいきする"},{text:"やさい",kanji:"野菜",hint:"畑でとれる食べ物"},
+        {text:"さいこう",kanji:"最高",hint:"一番すばらしい"},{text:"もくざい",kanji:"木材",hint:"家や家具をつくるもの"},{text:"きのう",kanji:"昨日",hint:"１つ前の日"},
+        {text:"とくべつ",kanji:"特別",hint:"普通とちがう"},{text:"さんか",kanji:"参加",hint:"仲間に加わる"},{text:"さんぽ",kanji:"散歩",hint:"ぶらぶら歩く"},
+        {text:"あいこく",kanji:"愛国",hint:"国を思う心"},{text:"いか",kanji:"以下",hint:"それより下"},{text:"えいぶん",kanji:"英文",hint:"外国の言葉で書かれたもの"},
+        {text:"えいこう",kanji:"栄光",hint:"ほめられること"},{text:"えんすい",kanji:"塩水",hint:"海のようにしょっぱいえきたい"},{text:"おくまん",kanji:"億万",hint:"数えきれないほど"},
+        {text:"かさん",kanji:"加算",hint:"たし算"},{text:"かじつ",kanji:"果実",hint:"木の実、フルーツ"},{text:"かいぎょう",kanji:"改行",hint:"次の行へうつる"},
+        {text:"がいちゅう",kanji:"害虫",hint:"野菜を食べたりする悪い生き物"},{text:"まちかど",kanji:"街角",hint:"道のかど"},{text:"だいじん",kanji:"大臣",hint:"えらい役人"},
+        {text:"せきしょ",kanji:"関所",hint:"通行手形を見せる"},{text:"がんぼう",kanji:"願望",hint:"強く願うこと"},{text:"だいきち",kanji:"大吉",hint:"おみくじで一番"},
+        {text:"きゅうしゅつ",kanji:"救出",hint:"助け出す"},{text:"きょしゅ",kanji:"挙手",hint:"手をあげる"},{text:"ぎょせん",kanji:"漁船",hint:"魚をとる船"},
+        {text:"てかがみ",kanji:"手鏡",hint:"顔をうつす小さな道具"},{text:"はんけい",kanji:"半径",hint:"直径の半分"},{text:"おおがた",kanji:"大型",hint:"とても大きい"},
+        {text:"けしき",kanji:"景色",hint:"ながめ、風景"},{text:"けってん",kanji:"欠点",hint:"足りないところ"},{text:"けっせい",kanji:"結成",hint:"チームを作る"},
+        {text:"たいけん",kanji:"体験",hint:"自分でやってみる"},{text:"てんこう",kanji:"天候",hint:"空のようす"},{text:"こうかい",kanji:"航海",hint:"船で海を進む"},
+        {text:"こくはく",kanji:"告白",hint:"秘密を打ち明ける"},{text:"てんさ",kanji:"点差",hint:"点数のちがい"},{text:"なふだ",kanji:"名札",hint:"名前のカード"}
+      ]
     };
 
     // ==========================================
@@ -220,18 +373,14 @@
         this.currentLength = "2";
         this.currentGrade = "only4";
         this.currentWords = [];
-        this.loadFromStorage();
+        this.loadCustomFromStorage();
       }
 
-      loadFromStorage() {
+      loadCustomFromStorage() {
         const saved = localStorage.getItem('othello_custom_words');
         if (saved) {
-          try {
-            this.customWords = JSON.parse(saved);
-          } catch (e) {
-            console.error('Failed to parse saved custom words');
-            localStorage.removeItem('othello_custom_words');
-          }
+          try { this.customWords = JSON.parse(saved); } 
+          catch (e) { localStorage.removeItem('othello_custom_words'); }
         }
       }
 
@@ -254,8 +403,6 @@
         if (newCustomWords.length < 60) throw new Error(`データが不足しています（現在 ${newCustomWords.length}個）。最低60個必要です。`);
         this.customWords = newCustomWords;
         this.currentGrade = 'custom';
-        
-        // 永続化処理を追加
         localStorage.setItem('othello_custom_words', JSON.stringify(this.customWords));
       }
 
@@ -266,25 +413,29 @@
           const db = (this.currentGrade === "upTo3" ? DB_UPTO3 : DB_ONLY4);
           list = (this.currentLength === "1" ? db.len1 : db.len2);
         }
-        const hardCount = Math.min(20, Math.floor(list.length / 4));
-        const normalList = list.slice(0, list.length - hardCount);
-        const hardList = list.slice(list.length - hardCount);
-        let normalPool = shuffleArray([...normalList]);
-        let hardPool = shuffleArray([...hardList]);
         
-        while (hardPool.length < 4) hardPool = hardPool.concat(shuffleArray([...hardList]));
-        while (normalPool.length < 56) normalPool = normalPool.concat(shuffleArray([...normalList]));
+        const hardCount = 4;
+        let workingList = shuffleArray([...list]);
+        let hardPool = workingList.splice(0, Math.min(hardCount, workingList.length));
+        let normalPool = workingList;
+
+        while (hardPool.length < 4) {
+            const needed = 4 - hardPool.length;
+            hardPool = hardPool.concat(shuffleArray([...list]).slice(0, needed));
+        }
+        while (normalPool.length < 56) {
+            const needed = 56 - normalPool.length;
+            normalPool = normalPool.concat(shuffleArray([...list]).slice(0, needed));
+        }
         
-        let selectedHard = hardPool.slice(0, 4);
-        let selectedNormal = normalPool.slice(0, 56);
         let words = Array(64).fill(null);
         const corners = [0, 7, 56, 63], centers = [27, 28, 35, 36];
         let normalIdx = 0, hardIdx = 0;
         
         for (let i = 0; i < 64; i++) {
           if (centers.includes(i)) words[i] = { text: "", kanji: "", hint: "" };
-          else if (corners.includes(i)) words[i] = selectedHard[hardIdx++];
-          else words[i] = selectedNormal[normalIdx++];
+          else if (corners.includes(i)) words[i] = hardPool[hardIdx++];
+          else words[i] = normalPool[normalIdx++];
         }
         this.currentWords = words;
         return words;
@@ -302,7 +453,7 @@
         this.board[3][3] = 1; this.board[3][4] = 2; this.board[4][3] = 2; this.board[4][4] = 1;
         this.currentPlayer = 1;
         this.isGameOver = false;
-        this.showingKanji = null; // {r, c}
+        this.showingKanji = null;
         this.isGameStarted = false;
         this.passedHistory = new Set();
         this.historyStack = [];
@@ -372,10 +523,16 @@
         document.getElementById('btn-reset').onclick = () => controller.showConfirm('reset');
         document.getElementById('btn-shuffle').onclick = () => controller.showConfirm('shuffle');
         document.getElementById('btn-restart').onclick = () => controller.handleRestart();
-        document.getElementById('select-length').onchange = (e) => controller.handleSettingsChange('length', e.target.value);
-        document.getElementById('select-grade').onchange = (e) => controller.handleSettingsChange('grade', e.target.value);
         
-        // Modals
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+          btn.onclick = (e) => {
+            if (e.target.disabled) return;
+            const group = e.target.dataset.group;
+            const value = e.target.dataset.value;
+            controller.handleSettingsChange(group, value);
+          };
+        });
+        
         document.getElementById('btn-confirm-no').onclick = () => controller.closeConfirm();
         document.getElementById('btn-confirm-yes').onclick = () => controller.executeConfirm();
         document.getElementById('btn-csv-help').onclick = () => controller.showModal('modal-csv-help', 'csv-help-content');
@@ -385,11 +542,18 @@
         document.getElementById('btn-close-clear').onclick = () => { controller.sound.playTap(); document.getElementById('modal-clear').classList.add('hidden'); };
       }
 
-      initSettingsUI(hasCustomData) {
+      initSettingsUI(hasCustomData, currentLength, currentGrade) {
         const optCustom = document.getElementById('opt-custom');
-        if (hasCustomData) {
-          optCustom.disabled = false;
-        }
+        optCustom.disabled = !hasCustomData;
+        this.updateToggleUI('length', currentLength);
+        this.updateToggleUI('grade', currentGrade);
+      }
+
+      updateToggleUI(group, value) {
+        document.querySelectorAll(`.toggle-btn[data-group="${group}"]`).forEach(btn => {
+          if (btn.dataset.value === value) btn.classList.add('active');
+          else btn.classList.remove('active');
+        });
       }
 
       setUILock(locked) {
@@ -399,10 +563,16 @@
       }
 
       setSettingsLock(locked) {
-        const selLen = document.getElementById('select-length'), selGrd = document.getElementById('select-grade'), btnImport = document.getElementById('btn-import-csv'), panel = document.getElementById('settings-panel'), lockIcon = document.getElementById('lock-icon');
-        selLen.disabled = locked; selGrd.disabled = locked; btnImport.disabled = locked;
-        if (locked) { panel.classList.add('opacity-80', 'grayscale-[0.4]'); lockIcon.classList.remove('opacity-0'); } 
-        else { panel.classList.remove('opacity-80', 'grayscale-[0.4]'); lockIcon.classList.add('opacity-0'); }
+        const btns = document.querySelectorAll('.toggle-btn:not(#opt-custom[disabled])');
+        const btnImport = document.getElementById('btn-import-csv');
+        const panel = document.getElementById('settings-panel');
+        const lockIcon = document.getElementById('lock-icon');
+        
+        btns.forEach(b => b.disabled = locked);
+        btnImport.disabled = locked;
+        
+        if (locked) { panel.classList.add('opacity-70', 'grayscale-[0.3]'); lockIcon.classList.remove('opacity-0'); } 
+        else { panel.classList.remove('opacity-70', 'grayscale-[0.3]'); lockIcon.classList.add('opacity-0'); }
       }
 
       updateUndoButton(canUndo) {
@@ -413,16 +583,14 @@
       updateUI(state) {
         const {s1, s2} = state.getScores();
         this.score1El.innerText = s1; this.score2El.innerText = s2;
-        document.body.classList.remove('bg-slate-200', 'bg-sky-100', 'bg-pink-100');
+        
         if (state.currentPlayer === 1) {
-          document.body.classList.add('bg-sky-100');
           this.turnInd.innerText = "水色のターン！";
-          this.turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-sky-300 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
+          this.turnInd.className = "text-base md:text-lg font-black py-2 rounded-full text-center bg-sky-300 text-sky-900 border-4 border-white shadow animate-bounce-subtle tracking-widest";
           this.p1Box.classList.add('active-player-card'); this.p2Box.classList.remove('active-player-card');
         } else {
-          document.body.classList.add('bg-pink-100');
           this.turnInd.innerText = "ピンクのターン！";
-          this.turnInd.className = "text-xl font-black py-2.5 rounded-full text-center bg-pink-400 text-gray-900 border-4 border-white shadow-lg animate-bounce-subtle scale-105 transform transition-all duration-300";
+          this.turnInd.className = "text-base md:text-lg font-black py-2 rounded-full text-center bg-pink-400 text-pink-900 border-4 border-white shadow animate-bounce-subtle tracking-widest";
           this.p2Box.classList.add('active-player-card'); this.p1Box.classList.remove('active-player-card');
         }
       }
@@ -434,24 +602,41 @@
             const word = words[r * 8 + c], cell = document.createElement('div');
             cell.className = 'relative w-full h-full cell-flip-container cursor-pointer';
             cell.onclick = () => cellClickHandler(r, c);
-            const inner = document.createElement('div'); inner.id = `cell-inner-${r}-${c}`; inner.className = 'cell-flip-inner absolute inset-0 w-full h-full border border-emerald-950 rounded-sm shadow-inner bg-emerald-700';
-            const f = document.createElement('div'); f.id = `face-front-${r}-${c}`; f.className = 'cell-flip-face font-kyokasho absolute inset-0 bg-emerald-700 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
-            const b = document.createElement('div'); b.className = 'cell-flip-face font-kyokasho cell-flip-back absolute inset-0 bg-emerald-600 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm';
+            const inner = document.createElement('div'); inner.id = `cell-inner-${r}-${c}`; inner.className = 'cell-flip-inner absolute inset-0 w-full h-full rounded-sm shadow-inner bg-emerald-600';
+            const f = document.createElement('div'); f.id = `face-front-${r}-${c}`; f.className = 'cell-flip-face font-kyokasho absolute inset-0 bg-emerald-600 flex flex-col items-center justify-center p-0.5 md:p-1 overflow-hidden rounded-sm border border-emerald-800/50';
+            const b = document.createElement('div'); b.className = 'cell-flip-face font-kyokasho cell-flip-back absolute inset-0 bg-emerald-500 flex flex-col items-center justify-center p-1 overflow-hidden rounded-sm border border-emerald-700/50';
+            
             if (word && word.text) {
-              const t = document.createElement('div'); const charLen = word.text.length;
-              t.style.fontSize = (charLen === 1) ? '48cqw' : (charLen === 2) ? '34cqw' : (charLen === 3) ? '26cqw' : '20cqw';
-              t.className = 'text-white font-black text-center leading-none drop-shadow-md w-full break-all px-0.5'; t.innerText = word.text; f.appendChild(t);
-              const h = document.createElement('div'); h.className = 'text-yellow-200 font-bold text-[7px] md:text-[10px] text-center leading-tight mt-1 w-full line-clamp-2'; h.innerText = word.hint; f.appendChild(h);
+              const tWrap = document.createElement('div');
+              tWrap.className = 'flex-1 w-full flex items-center justify-center min-h-0';
+              const t = document.createElement('div'); 
+              const charLen = word.text.length;
+              t.style.fontSize = (charLen === 1) ? '38cqw' : (charLen === 2) ? '28cqw' : (charLen === 3) ? '20cqw' : '15cqw';
+              t.className = 'text-white font-black text-center leading-none drop-shadow w-full break-all px-0.5 shrink'; 
+              t.innerText = word.text; 
+              tWrap.appendChild(t);
+              
+              const h = document.createElement('div'); 
+              h.className = 'text-yellow-200 font-bold text-center leading-[1.15] w-full line-clamp-2 shrink-0 h-auto pb-0.5 px-0.5'; 
+              h.style.fontSize = '13cqw';
+              h.innerText = word.hint; 
+              
+              f.appendChild(tWrap);
+              if(word.hint) f.appendChild(h);
+
               const k = document.createElement('div'); k.style.fontSize = (word.kanji.length === 1) ? '50cqw' : '30cqw';
-              k.className = 'text-white font-black text-center drop-shadow-lg w-full'; k.innerText = word.kanji; b.appendChild(k);
+              k.className = 'text-white font-black text-center drop-shadow-md w-full'; k.innerText = word.kanji; b.appendChild(k);
             }
+            
             const sC = document.createElement('div'); sC.id = `s-cont-${r}-${c}`; sC.className = 'absolute inset-1 hidden z-30 pointer-events-none';
-            const s = document.createElement('div'); s.id = `stone-${r}-${c}`; s.className = 'stone w-full h-full rounded-full shadow-lg relative';
-            const sf1 = document.createElement('div'); sf1.className = 'stone-face absolute inset-0 rounded-full bg-sky-300 border-2 border-sky-400 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
-            const sf2 = document.createElement('div'); sf2.className = 'stone-face stone-back absolute inset-0 rounded-full bg-pink-400 border-2 border-pink-500 shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3)]';
+            const s = document.createElement('div'); s.id = `stone-${r}-${c}`; s.className = 'stone w-full h-full rounded-full shadow-md relative';
+            const sf1 = document.createElement('div'); sf1.className = 'stone-face absolute inset-0 rounded-full bg-sky-300 border border-sky-400 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2)]';
+            const sf2 = document.createElement('div'); sf2.className = 'stone-face stone-back absolute inset-0 rounded-full bg-pink-400 border border-pink-500 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2)]';
             s.appendChild(sf1); s.appendChild(sf2); sC.appendChild(s);
-            const mWrap = document.createElement('div'); mWrap.id = `marker-wrap-${r}-${c}`; mWrap.className = 'absolute top-0.5 right-0.5 w-[15%] aspect-square hidden z-20 pointer-events-none rounded-full';
+            
+            const mWrap = document.createElement('div'); mWrap.id = `marker-wrap-${r}-${c}`; mWrap.className = 'absolute top-[10%] right-[10%] w-[15%] aspect-square hidden z-20 pointer-events-none rounded-full';
             const dot = document.createElement('div'); dot.className = 'place-marker'; dot.id = `dot-${r}-${c}`; mWrap.appendChild(dot);
+            
             inner.appendChild(f); inner.appendChild(b); cell.appendChild(inner); cell.appendChild(sC); cell.appendChild(mWrap); this.boardEl.appendChild(cell);
           }
         }
@@ -485,7 +670,7 @@
         const {s1, s2} = state.getScores();
         const wt = document.getElementById('winner-text'); 
         wt.innerText = s1 > s2 ? "水色の勝ち！🎉" : (s2 > s1 ? "ピンクの勝ち！🎉" : "ひきわけ！🤝");
-        wt.className = `text-2xl font-bold p-4 rounded-2xl border-4 flex-shrink-0 ${s1>s2?'bg-sky-50 border-sky-400 text-sky-800':'bg-pink-50 border-pink-400 text-pink-800'}`;
+        wt.className = `text-2xl font-bold p-4 rounded-xl border flex-shrink-0 ${s1>s2?'bg-sky-50 border-sky-300 text-sky-800':'bg-pink-50 border-pink-300 text-pink-800'}`;
         
         let p1Words = [], p2Words = [], unobtainedWords = [];
         for (let r = 0; r < 8; r++) {
@@ -496,10 +681,10 @@
           }
         }
         let reviewSet = new Set([...unobtainedWords, ...state.passedHistory]);
-        const createHTML = (w) => `<div class="px-2 py-1.5 border-b border-gray-200/50 flex justify-between items-end gap-2 bg-white/50 rounded hover:bg-white transition-colors"><span class="text-xl font-bold">${w.kanji}</span><span class="text-xs text-gray-500 font-medium pb-0.5">${w.text}</span></div>`;
+        const createHTML = (w) => `<div class="px-2 py-1.5 border-b border-slate-200/50 flex justify-between items-end gap-2 bg-white/60 rounded hover:bg-white transition-colors"><span class="text-xl font-bold text-slate-800">${w.kanji}</span><span class="text-xs text-slate-500 font-medium pb-0.5">${w.text}</span></div>`;
         document.getElementById('p1-list').innerHTML = p1Words.map(createHTML).join('');
         document.getElementById('p2-list').innerHTML = p2Words.map(createHTML).join('');
-        document.getElementById('pass-list').innerHTML = reviewSet.size === 0 ? `<div class="p-4 text-center text-sm text-gray-400">パスされた漢字はありません。<br>すばらしい！</div>` : Array.from(reviewSet).map(createHTML).join('');
+        document.getElementById('pass-list').innerHTML = reviewSet.size === 0 ? `<div class="p-4 text-center text-sm text-slate-400">パスされた漢字はありません。<br>すばらしい！</div>` : Array.from(reviewSet).map(createHTML).join('');
         
         document.getElementById('modal-clear').classList.remove('hidden');
         setTimeout(() => document.getElementById('clear-content').classList.add('scale-100'), 50);
@@ -515,7 +700,7 @@
 
       showConfirmModal(action) {
         const modal = document.getElementById('modal-confirm'), content = document.getElementById('confirm-content'), msg = document.getElementById('confirm-message'); 
-        msg.innerHTML = action === 'reset' ? "いままでの 記録が きえます。<br>ほんとうに 最初から やり直しますか？" : "いままでの 記録が きえます。<br>ほんとうに 問題を 変えますか？"; 
+        msg.innerHTML = action === 'reset' ? "いままでの記録が消えます。<br>ほんとうに最初からやり直しますか？" : "いままでの記録が消えます。<br>ほんとうに問題を変更しますか？"; 
         modal.classList.remove('hidden'); requestAnimationFrame(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-90'); }); 
       }
       
@@ -543,13 +728,70 @@
         this.state = new BoardModel();
         this.view = new GameView();
         this.pendingAction = null;
+        this.SAVE_KEY = 'othello_game_state';
       }
 
       init() {
         this.view.bindEvents(this);
-        // 保存されたデータがあればUIを有効化
-        this.view.initSettingsUI(this.data.customWords.length >= 60);
-        this.resetGame(true);
+        
+        const hasSavedState = this.loadState();
+        this.view.initSettingsUI(this.data.customWords.length >= 60, this.data.currentLength, this.data.currentGrade);
+        
+        if (hasSavedState) {
+            this.view.initBoardDOM(this.data.currentWords, (r, c) => this.handleCellClick(r, c));
+            this.view.updateBoardState(this.state);
+            this.view.updateUI(this.state);
+            this.view.updateUndoButton(this.state.historyStack.length > 0);
+            this.view.setSettingsLock(this.state.isGameStarted);
+        } else {
+            this.resetGame(true);
+        }
+      }
+
+      saveState() {
+        const payload = {
+            boardState: {
+                board: this.state.board,
+                currentPlayer: this.state.currentPlayer,
+                isGameOver: this.state.isGameOver,
+                showingKanji: this.state.showingKanji,
+                isGameStarted: this.state.isGameStarted,
+                passedHistory: Array.from(this.state.passedHistory),
+                historyStack: this.state.historyStack
+            },
+            dataState: {
+                currentLength: this.data.currentLength,
+                currentGrade: this.data.currentGrade,
+                currentWords: this.data.currentWords
+            }
+        };
+        localStorage.setItem(this.SAVE_KEY, JSON.stringify(payload));
+      }
+
+      loadState() {
+        const saved = localStorage.getItem(this.SAVE_KEY);
+        if (!saved) return false;
+        try {
+            const payload = JSON.parse(saved);
+            this.data.currentLength = payload.dataState.currentLength;
+            this.data.currentGrade = payload.dataState.currentGrade;
+            this.data.currentWords = payload.dataState.currentWords;
+            this.state.board = payload.boardState.board;
+            this.state.currentPlayer = payload.boardState.currentPlayer;
+            this.state.isGameOver = payload.boardState.isGameOver;
+            this.state.showingKanji = payload.boardState.showingKanji;
+            this.state.isGameStarted = payload.boardState.isGameStarted;
+            this.state.passedHistory = new Set(payload.boardState.passedHistory);
+            this.state.historyStack = payload.boardState.historyStack;
+            return true;
+        } catch (e) {
+            localStorage.removeItem(this.SAVE_KEY);
+            return false;
+        }
+      }
+
+      clearSavedState() {
+          localStorage.removeItem(this.SAVE_KEY);
       }
 
       resetGame(generateNewWords = true) {
@@ -562,6 +804,7 @@
         this.view.updateBoardState(this.state);
         this.view.updateUI(this.state);
         this.view.updateUndoButton(false);
+        this.clearSavedState(); 
       }
 
       async handleCellClick(r, c) {
@@ -574,7 +817,6 @@
         }
         
         if (this.state.showingKanji && this.state.showingKanji.r === r && this.state.showingKanji.c === c) {
-          // 置く処理
           this.view.setUILock(true); 
           this.state.saveState();
           this.view.updateUndoButton(true);
@@ -602,14 +844,15 @@
             this.sound.playPass();
             await this.view.showPassModal(); 
           } else { 
-            this.checkGameOver(true); this.view.setUILock(false); return; 
+            this.checkGameOver(true); this.view.setUILock(false); this.saveState(); return; 
           }
           this.view.setUILock(false); this.view.updateUI(this.state); this.view.updateBoardState(this.state, true); this.checkGameOver(false);
+          this.saveState(); 
         } else { 
-          // めくる処理
           this.state.showingKanji = { r, c }; 
           this.sound.playTap(); 
           this.view.updateBoardState(this.state, true); 
+          this.saveState(); 
         }
       }
 
@@ -619,10 +862,10 @@
           this.state.isGameOver = true; 
           this.sound.playWin();
           this.view.showGameOverModal(this.state, this.data.currentWords);
+          this.clearSavedState(); 
         }
       }
 
-      // --- Event Handlers ---
       handleImportClick() { if (this.state.isGameStarted) return; this.sound.init(); document.getElementById('file-upload').click(); }
       
       handleFileChange(e) {
@@ -631,8 +874,7 @@
         reader.onload = (event) => {
           try {
             this.data.parseCSV(event.target.result);
-            document.getElementById('opt-custom').disabled = false;
-            document.getElementById('select-grade').value = 'custom';
+            this.view.initSettingsUI(true, this.data.currentLength, 'custom');
             alert(`成功！ ${this.data.customWords.length}個の問題を読み込みました。`);
             this.resetGame(true);
           } catch(err) { alert(err.message); }
@@ -649,6 +891,7 @@
         this.view.updateUI(this.state); 
         this.view.updateBoardState(this.state, true); 
         this.view.updateUndoButton(this.state.historyStack.length > 0);
+        this.saveState();
       }
 
       handlePass() {
@@ -665,7 +908,8 @@
         this.state.showingKanji = null; 
         this.view.updateUI(this.state); 
         this.view.updateBoardState(this.state); 
-        this.checkGameOver(false); 
+        this.checkGameOver(false);
+        this.saveState(); 
       }
 
       showConfirm(action) {
@@ -685,16 +929,17 @@
       }
 
       handleRestart() { document.getElementById('modal-clear').classList.add('hidden'); this.resetGame(true); }
-      handleSettingsChange(type, value) {
-        if (type === 'length') this.data.currentLength = value;
-        else if (type === 'grade') this.data.currentGrade = value;
+      
+      handleSettingsChange(group, value) {
+        this.sound.playTap();
+        if (group === 'length') this.data.currentLength = value;
+        else if (group === 'grade') this.data.currentGrade = value;
+        
+        this.view.updateToggleUI(group, value);
         this.resetGame(true);
       }
     }
 
-    // ==========================================
-    // Bootstrap
-    // ==========================================
     window.onload = () => {
       const app = new GameController();
       app.init();
